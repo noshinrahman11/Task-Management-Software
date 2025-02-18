@@ -18,3 +18,5 @@ return 'Invalid username or password’
 # If the request method is GET, render the login template
 return render_template('login.html')
 
+print("hello")
+

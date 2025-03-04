@@ -2,6 +2,13 @@ from flask import Flask, render_template, request
 from tkinter import Tk, filedialog
 
 
+window = Tk()
+
+window.title("Task Management System")
+window.geometry('350x200')
+
+
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -12,7 +19,5 @@ def index():
     return render_template('index.html')
 
 print('Hi')
-
-
 
 

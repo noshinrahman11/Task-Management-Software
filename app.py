@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request
-from tkinter import Tk, filedialog
+from tkinter import *
 
 
 window = Tk()

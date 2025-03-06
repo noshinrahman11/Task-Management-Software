@@ -1,0 +1,99 @@
+from flask_login import UserMixin
+from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from database import Base
+from login import login_manager
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+# NOTE: Define tables with no foreign keys first
+
+# Table for users
+class User(Base, UserMixin):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    FirstName = Column(String(50), unique=True)
+    LastName = Column(String(50), unique=True)
+    email = Column(String(50), unique=True)
+    BirthDate = Column(DateTime)
+    password = Column(String(50))
+
+    def __init__(self, username=None, password=None):
+        self.username = username
+        self.password = password
+
+    def get_password(self):
+        return self.password
+    
+    def get_id(self):
+        return self.id
+    
+
+# Table for tasks
+class Task(Base):
+    __tablename__ = 'tasks'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+
+    def __init__(self, name=None, user_id=None):
+        self.name = name
+
+
+# Table for projects
+class Project(Base):
+    __tablename__ = 'projects'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    description = Column(String(140))
+    status = Column(Integer)
+    StartDate = Column(DateTime)
+    EndDate = Column(DateTime)
+
+    def __init__(self, name=None):
+        self.name = name
+
+
+# Table for many-to-many relationship between users and tasks
+class UserTask(Base):
+    __tablename__ = 'user_tasks'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    task_id = Column(Integer, ForeignKey('tasks.id'))
+
+    user = relationship("User", backref="user_tasks")
+    task = relationship("Task", backref="user_tasks")
+
+    def __init__(self, user_id=None, task_id=None):
+        self.user_id = user_id
+        self.task_id = task_id
+
+
+# Table for many-to-many relationship between users and projects
+class UserProject(Base):
+    __tablename__ = 'user_projects'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    project_id = Column(Integer, ForeignKey('projects.id'))
+
+    user = relationship("User", backref="user_projects")
+    task = relationship("Project", backref="user_projects")
+
+    def __init__(self, user_id=None, project_id=None):
+        self.user_id = user_id
+        self.project_id = project_id
+
+# Table for many-to-many relationship between projects and tasks
+class ProjectTask(Base):
+    __tablename__ = 'project_tasks'
+    id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, ForeignKey('projects.id'))
+    task_id = Column(Integer, ForeignKey('tasks.id'))
+
+    project = relationship("Project", backref="project_tasks")
+    task = relationship("Task", backref="project_tasks")
+
+    def __init__(self, project_id=None, task_id=None):
+        self.project_id = project_id
+        self.task_id = task_id

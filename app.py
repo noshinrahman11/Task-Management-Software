@@ -13,6 +13,7 @@ with app.app_context():
 def index():
     return render_template("index.html")
 
+#do hashing in post section and login in get section
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':

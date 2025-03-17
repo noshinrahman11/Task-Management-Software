@@ -22,6 +22,7 @@ def login():
         return render_template('login.html')
     if request.method == 'GET':
         return render_template('login.html')
+    
 
 @app.errorhandler(401)
 def unauthorized(e):

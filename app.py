@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, redirect, request
 from flask_login import login_required
 from __init__ import create_app
 from database import init_db, db_sessions
@@ -13,13 +13,21 @@ with app.app_context():
 def index():
     return render_template("index.html")
 
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        ## add function to check if user credentials are valid
+        pass
+    if request.method == 'GET':
+        pass
+
 @app.errorhandler(401)
 def unauthorized(e):
     return render_template("login.html")
     
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("404.html")
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     app.run(host='localhost', port=5000, debug=True)

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, request
 from flask_login import login_required
+from flaskwebgui import FlaskUI
 from __init__ import create_app
 from database import init_db, db_sessions
 
@@ -31,6 +32,12 @@ def not_found(e):
     return redirect(url_for('login'))
 
 if __name__ == "__main__":
-    app.run(host='localhost', port=5000, debug=True)
-
+    # app.run(host='localhost', port=5000, debug=True)
+    
+    FlaskUI(app=app,
+        server="flask",
+        width=800,
+        height=600,
+        ).run()
+    
     #make api call in js

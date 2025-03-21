@@ -15,6 +15,8 @@ def load_user(user_id):
 class User(Base, UserMixin):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True)
+    password = Column(String(50))
     FirstName = Column(String(50), unique=True)
     LastName = Column(String(50), unique=True)
     email = Column(String(50), unique=True)

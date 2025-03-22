@@ -20,7 +20,7 @@
     {% endwith %}
 
     <script>
-        // Form validation, valid username, email, and password
+        // Form validation, no empty fields, valid email, password requirements
         function validateForm() {
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
@@ -28,6 +28,7 @@
             var firstName = document.getElementById('FirstName').value;
             var lastName = document.getElementById('LastName').value;
             var birthDate = document.getElementById('BirthDate').value;
+            var role = document.getElementById('Role').value;
             var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             var passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).+$/;
 
@@ -70,12 +71,18 @@
             <label for="BirthDate">Birth Date:</label>
             <input type="date" id="BirthDate" name="BirthDate" placeholder="Enter your username" required>
             
+            <label for="Role">Role:</label>
+            <select id="Role" name="Role" required>
+                <option value="Staff">Staff</option>
+                <option value="Manager">Manager</option>
+                <option value="Admin">Admin</option>
+            </select>
             <br><br>
             <!-- <input type="submit" value="register"> -->
             <button type="submit" value="register">Register</button>
         </form>
         <br>
-        <!-- Switch to Register Button -->
+        <!-- Switch to Login Button -->
         <button class="switch-register-login" onclick="window.location.href = '/login';">Return to Login</button> 
 
     </div>

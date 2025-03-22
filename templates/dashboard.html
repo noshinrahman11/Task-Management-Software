@@ -5,6 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Management Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        // Form validation, no empty fields, valid email, password requirements
+        function validateForm() {
+            var email = document.getElementById('taskName').value;
+            var password = document.getElementById('description').value;
+            var username = document.getElementById('startDate').value;
+            var firstName = document.getElementById('dueDate').value;
+            var lastName = document.getElementById('category').value;
+            var birthDate = document.getElementById('status').value;
+            var birthDate = document.getElementById('priority').value;
+            var assignedTo = document.getElementById('assignedTo').value;
+            
+            return true;
+        }
+    </script>
+
 </head>
 <body>
     <div class="container mt-5">
@@ -38,27 +68,27 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addTaskForm">
+                    <form id="addTaskForm" action=/dashboard method="POST" onsubmit="return validateForm()">
                         <div class="mb-3">
                             <label for="taskName" class="form-label">Task Name</label>
-                            <input type="text" class="form-control" id="taskName" required>
+                            <input type="text" class="form-control" id="taskName" name="taskName" required>
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <input type="text" class="form-control" id="description" required>
+                            <input type="text" class="form-control" id="description" name="description" required>
                         </div>
                         <div class="mb-3">
                             <label for="startDate" class="form-label">Start Date</label>
-                            <input type="datetime-local" class="form-control" id="startDate" required>
+                            <input type="datetime-local" class="form-control" id="startDate" name="startDate" required>
                         </div>
                         <div class="mb-3">
                             <label for="dueDate" class="form-label">Due Date</label>
-                            <input type="datetime-local" class="form-control" id="dueDate" required>
+                            <input type="datetime-local" class="form-control" id="dueDate" name="dueDate" required>
                         </div>
                         <!-- FIXME: Add dropdown select box options for category, status, and priority -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
-                            <select class="form-control" id="category" required>
+                            <select class="form-control" id="category" name="category" required>
                                 <option value="Work">Work</option>
                                 <option value="Personal">Personal</option>
                                 <option value="Other">Other</option>
@@ -68,7 +98,7 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <!-- FIXME: Add received and accepted after adding manager -->
-                            <select class="form-control" id="status" required>
+                            <select class="form-control" id="status" name="status" required>
                                 <option value="Not started">Not Started</option>
                                 <option value="In Progrss">In Progress</option>
                                 <option value="Completed">Completed</option>
@@ -79,7 +109,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="priority" class="form-label">Priority</label>
-                            <select class="form-control" id="priority" required>
+                            <select class="form-control" id="priority" name="priority" required>
                                 <option value="Low">Low</option>
                                 <option value="Medium">Medium</option>
                                 <option value="High">High</option>
@@ -88,9 +118,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="assignedTo" class="form-label">Assigned To</label>
-                            <select class="form-control" id="assignedTo" required>
+                            <select class="form-control" id="assignedTo" name="assignedTo" required>
                                 <option value="user1_username">User 1</option>
-                            <input type="text" class="form-control" id="assignedTo" required>
+                                <option value="admin_username">Admin</option> <!-- FIXME:Change values -->
+                            </select>
+                            <!-- <input type="text" class="form-control" id="assignedTo" required> -->
                         </div>
                         <button type="submit" class="btn btn-primary">Add Task</button>
                     </form>
@@ -124,23 +156,6 @@
                 taskTableBody.appendChild(row);
             });
         }
-
-        document.getElementById('addTaskForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const newTask = {
-                taskName: document.getElementById('taskName').value,
-                dueDate: document.getElementById('dueDate').value,
-                category: document.getElementById('category').value,
-                status: document.getElementById('status').value,
-                priority: document.getElementById('priority').value,
-                assignedTo: document.getElementById('assignedTo').value
-            };
-            tasks.push(newTask);
-            renderTasks();
-            document.getElementById('addTaskForm').reset();
-            const addTaskModal = new bootstrap.Modal(document.getElementById('addTaskModal'));
-            addTaskModal.hide();
-        });
 
         renderTasks();
     </script>

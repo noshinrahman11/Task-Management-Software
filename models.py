@@ -21,14 +21,16 @@ class User(Base, UserMixin):
     LastName = Column(String(50), unique=True)
     email = Column(String(50), unique=True)
     BirthDate = Column(DateTime)
+    Role = Column(String(20))
 
-    def __init__(self, username=None, password=None, FirstName=None, LastName=None, email=None, BirthDate=None):
+    def __init__(self, username=None, password=None, FirstName=None, LastName=None, email=None, BirthDate=None, Role=None):
         self.username = username
         self.set_password(password)
         self.FirstName = FirstName
         self.LastName = LastName
         self.email = email
         self.BirthDate = BirthDate
+        self.Role = Role
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

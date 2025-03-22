@@ -48,8 +48,8 @@ def register():
         password_hash = request.form['password']
         FirstName = request.form['FirstName']
         LastName = request.form['LastName']
-        # BirthDate = request.form['BirthDate']
-        BirthDate = datetime.strptime(request.form['BirthDate'], "%Y-%m-%d")
+        BirthDate = datetime.strptime(request.form['BirthDate'], "%Y-%m-%d") 
+        Role = request.form['Role']
 
         # Check if username or email already exists
         user = User.query.filter((User.username == username) | (User.email == email)).first()
@@ -61,7 +61,7 @@ def register():
             flash('Password must contain at least one number, one uppercase letter, and one special character.', category='error')
             return redirect(url_for('register'))
         else:
-            new_user = User(username=username, password=password_hash, email=email, FirstName=FirstName, LastName=LastName, BirthDate=BirthDate)
+            new_user = User(username=username, password=password_hash, email=email, FirstName=FirstName, LastName=LastName, BirthDate=BirthDate, Role=Role)
             # new_user.set_password(password_hash)
             db_sessions.add(new_user)
             db_sessions.commit()
@@ -83,18 +83,26 @@ def dashboard():
         status = request.form['status']
         priority = request.form['priority']
 
+        print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}")
+
         new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=current_user.username)
          # Create a new task instance and add it to the database
         
         db_sessions.add(new_task)
         db_sessions.commit()
+        print("Task added successfully to the database.")
+        
         flash('Task added successfully!', category='success')
-        return render_template("dashboard.html")
+        return redirect(url_for('dashboard'))
     
     # Retrieve user's tasks from the database
     # user_tasks = current_user.tasks
     # return render_template('dashboard.html', tasks=user_tasks, user=current_user)
-    return render_template('dashboard.html', user=current_user)
+
+    # return render_template('dashboard.html', user=current_user)
+
+    user_tasks = Task.query.filter_by(assignedTo=current_user.username).all()
+    return render_template('dashboard.html', tasks=user_tasks, user=current_user)
 
 @app.errorhandler(401)
 def unauthorized(e):

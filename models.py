@@ -16,12 +16,11 @@ class User(Base, UserMixin):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(String(50), unique=True)
-    password = Column(String(50))
+    password_hash = Column(String(200))
     FirstName = Column(String(50), unique=True)
     LastName = Column(String(50), unique=True)
     email = Column(String(50), unique=True)
     BirthDate = Column(DateTime)
-    password = Column(String(50))
 
     def __init__(self, username=None, password=None):
         self.username = username

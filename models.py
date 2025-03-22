@@ -22,9 +22,9 @@ class User(Base, UserMixin):
     email = Column(String(50), unique=True)
     BirthDate = Column(DateTime)
 
-    def __init__(self, username=None, password=None):
+    def __init__(self, username=None, password=None, FirstName=None, LastName=None, email=None, BirthDate=None):
         self.username = username
-        self.password = password
+        self.set_password(password)
         self.FirstName = FirstName
         self.LastName = LastName
         self.email = email

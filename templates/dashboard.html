@@ -58,18 +58,38 @@
                         <!-- FIXME: Add dropdown select box options for category, status, and priority -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
-                            <input type="text" class="form-control" id="category" required>
+                            <select class="form-control" id="category" required>
+                                <option value="Work">Work</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <!-- <input type="text" class="form-control" id="category" required> -->
                         </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <input type="text" selectBoxOptions="Work;Personal;Other" class="form-control" id="status" required>
+                            <!-- FIXME: Add received and accepted after adding manager -->
+                            <select class="form-control" id="status" required>
+                                <option value="Not started">Not Started</option>
+                                <option value="In Progrss">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="On Hold">On Hold</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <!-- <input type="text" class="form-control" id="status" required> -->
                         </div>
                         <div class="mb-3">
                             <label for="priority" class="form-label">Priority</label>
-                            <input type="text" selectBoxOptions="Low;Medium;High" class="form-control" id="priority" required>
+                            <select class="form-control" id="priority" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                            <!-- <input type="text" class="form-control" id="priority" required> -->
                         </div>
                         <div class="mb-3">
                             <label for="assignedTo" class="form-label">Assigned To</label>
+                            <select class="form-control" id="assignedTo" required>
+                                <option value="user1_username">User 1</option>
                             <input type="text" class="form-control" id="assignedTo" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Task</button>

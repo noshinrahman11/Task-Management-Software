@@ -27,6 +27,7 @@ def index():
 
 #do hashing in post section and login in get section
 ### Right now, the only user is username: admin, password: @dminPassword1, the hashed password is in db
+### Pssswords are P@ssword#
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':

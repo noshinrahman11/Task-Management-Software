@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Task Management Dashboard</h1>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Task Name</th>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assigned To</th>
+                </tr>
+            </thead>
+            <tbody id="taskTableBody">
+                <!-- Rows will be dynamically populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTaskModalLabel">Add New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTaskForm">
+                        <div class="mb-3">
+                            <label for="taskName" class="form-label">Task Name</label>
+                            <input type="text" class="form-control" id="taskName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="description" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="datetime-local" class="form-control" id="startDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dueDate" class="form-label">Due Date</label>
+                            <input type="datetime-local" class="form-control" id="dueDate" required>
+                        </div>
+                        <!-- FIXME: Add dropdown select box options for category, status, and priority -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="category" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <input type="text" selectBoxOptions="Work;Personal;Other" class="form-control" id="status" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <input type="text" selectBoxOptions="Low;Medium;High" class="form-control" id="priority" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignedTo" class="form-label">Assigned To</label>
+                            <input type="text" class="form-control" id="assignedTo" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Task</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // const tasks = [
+        //     { taskName: "Task 1", description:"First task, yay", startDate:"2023-09-025", dueDate: "2023-10-01", category: "Work", status: "Pending", priority: "High", assignedTo: "admin" },
+        //     { taskName: "Task 2", description:"Second task :)", startDate:"2023-09-025", dueDate: "2023-10-05", category: "Personal", status: "Completed", priority: "Low", assignedTo: "admin" }
+        // ];
+
+        const taskTableBody = document.getElementById('taskTableBody');
+
+        function renderTasks() {
+            taskTableBody.innerHTML = '';
+            tasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${task.taskName}</td>
+                    <td>${task.description}</td>
+                    <td>${task.startDate}</td>
+                    <td>${task.dueDate}</td>
+                    <td>${task.category}</td>
+                    <td>${task.status}</td>
+                    <td>${task.priority}</td>
+                    <td>${task.assignedTo}</td>
+                `;
+                taskTableBody.appendChild(row);
+            });
+        }
+
+        document.getElementById('addTaskForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newTask = {
+                taskName: document.getElementById('taskName').value,
+                dueDate: document.getElementById('dueDate').value,
+                category: document.getElementById('category').value,
+                status: document.getElementById('status').value,
+                priority: document.getElementById('priority').value,
+                assignedTo: document.getElementById('assignedTo').value
+            };
+            tasks.push(newTask);
+            renderTasks();
+            document.getElementById('addTaskForm').reset();
+            const addTaskModal = new bootstrap.Modal(document.getElementById('addTaskModal'));
+            addTaskModal.hide();
+        });
+
+        renderTasks();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

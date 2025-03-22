@@ -48,6 +48,13 @@ class Task(Base):
     __tablename__ = 'tasks'
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
+    description = Column(String(140))
+    startDate = Column(DateTime)
+    dueDate = Column(DateTime)
+    category = Column(String(20))
+    status = Column(String(20))
+    priority = Column(String(10))
+    assignedTo = Column(Integer, ForeignKey('users.id'))
 
     def __init__(self, name=None, user_id=None):
         self.name = name

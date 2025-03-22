@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, flash
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 from flaskwebgui import FlaskUI
 from __init__ import create_app
 from models import User, Task, Project 
@@ -21,7 +21,6 @@ with app.app_context():
     init_db()
 
 @app.route('/')
-@login_required
 def index():
     return render_template("index.html")
 
@@ -36,7 +35,7 @@ def login():
         user = User.query.filter((User.username == username) | (User.email == username)).first()
         if user and user.check_password(password_hash):
             login_user(user)
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password', category='error')
     return render_template('login.html')
@@ -68,9 +67,34 @@ def register():
             db_sessions.commit()
             login_user(new_user)  # Log in the new user automatically
             flash('Registration successful! Welcome!', category='success')
-            return redirect(url_for('index'))  # Redirect to the homepage after signup
+            return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
     return render_template('register.html')
 
+@app.route('/dashboard', methods=['GET', 'POST'])
+@login_required
+def dashboard():
+    if request.method == 'POST':
+        # Add new event to user's event list
+        taskName = request.form['taskName']
+        description = request.form['description']
+        startDate = request.form['startDate']
+        dueDate = request.form['dueDate']
+        category = request.form['category']
+        status = request.form['status']
+        priority = request.form['priority']
+
+        new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=current_user.username)
+         # Create a new task instance and add it to the database
+        
+        db_sessions.add(new_task)
+        db_sessions.commit()
+        flash('Task added successfully!', category='success')
+        return render_template("dashboard.html")
+    
+    # Retrieve user's tasks from the database
+    # user_tasks = current_user.tasks
+    # return render_template('dashboard.html', tasks=user_tasks, user=current_user)
+    return render_template('dashboard.html', user=current_user)
 
 @app.errorhandler(401)
 def unauthorized(e):

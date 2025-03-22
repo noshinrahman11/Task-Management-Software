@@ -4,6 +4,15 @@ from flaskwebgui import FlaskUI
 from __init__ import create_app
 from models import User, Task, Project 
 from database import init_db, db_sessions
+from flask_session import Session
+import re
+
+### When manually entering user, use this to enter hashed password
+# from werkzeug.security import generate_password_hash
+
+# password = "yourpassword"
+# hashed_password = generate_password_hash(password)
+# print(hashed_password)
 
 app = create_app()
 
@@ -30,7 +39,34 @@ def login():
             flash('Invalid username or password', category='error')
     return render_template('login.html')
     
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password_hash = request.form['password']
+        FirstName = request.form['FirstName']
+        LastName = request.form['LastName']
+        BirthDate = request.form['BirthDate']
 
+        # Check if username or email already exists
+        user = User.query.filter((User.username == username) | (User.email == email)).first()
+        # Checks for valid username, email, and password
+        if user:
+            flash('Username or email already exists', category='error')
+            return redirect(url_for('register'))
+        elif not re.match(r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)', password_hash):
+            flash('Password must contain at least one number, one uppercase letter, and one special character.', category='error')
+            return redirect(url_for('register'))
+        else:
+            new_user = User(username=username, email=email, FirstName=FirstName, LastName=LastName, BirthDate=BirthDate)
+            new_user.set_password(password_hash)
+            db_sessions.add(new_user)
+            db_sessions.commit()
+            login_user(new_user)  # Log in the new user automatically
+            flash('Registration successful! Welcome!', category='success')
+            return redirect(url_for('dashboard'))  # Redirect to the homepage after signup
+    return render_template('register.html')
 
 
 @app.errorhandler(401)

@@ -25,6 +25,10 @@ class User(Base, UserMixin):
     def __init__(self, username=None, password=None):
         self.username = username
         self.password = password
+        self.FirstName = FirstName
+        self.LastName = LastName
+        self.email = email
+        self.BirthDate = BirthDate
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

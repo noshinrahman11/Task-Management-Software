@@ -16,13 +16,14 @@ def index():
     return render_template("index.html")
 
 #do hashing in post section and login in get section
+### Right now, the only user is username: admin, password: @dminPassword1, the hashed password is in db
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['identifier']
-        password = request.form['password']
+        password_hash = request.form['password']
         user = User.query.filter((User.username == username) | (User.email == username)).first()
-        if user and user.check_password(password):
+        if user and user.check_password(password_hash):
             login_user(user)
             return redirect(url_for('index'))
         else:

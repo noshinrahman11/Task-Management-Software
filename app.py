@@ -32,8 +32,9 @@ def login():
     if request.method == 'POST':
         username = request.form['identifier']
         password_hash = request.form['password']
+        # Check if user exists and password is correct, if so, hash password and login user
         user = User.query.filter((User.username == username) | (User.email == username)).first()
-        if user and user.check_password(password_hash):
+        if user and user.check_password(password_hash): 
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
@@ -122,14 +123,70 @@ def dashboard():
     )
     
     users = User.query.all()
-    # Retrieve user's tasks from the database
-    # user_tasks = current_user.tasks
-    # return render_template('dashboard.html', tasks=user_tasks, user=current_user)
 
-    # return render_template('dashboard.html', user=current_user)
-
-    # user_tasks = Task.query.filter_by(assignedTo=current_user.username).all()
     return render_template('dashboard.html', tasks=user_tasks, user=current_user, users=users)
+
+@app.route('/edit_task/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+def edit_task(task_id):
+    task = Task.query.get(task_id)
+
+    if request.method == 'POST':
+        task.name = request.form['taskName']
+        task.description = request.form['description']
+        task.startDate = datetime.strptime(request.form['startDate'], "%Y-%m-%dT%H:%M")
+        task.dueDate = datetime.strptime(request.form['dueDate'], "%Y-%m-%dT%H:%M")
+        task.category = request.form['category']
+        task.status = request.form['status']
+        task.priority = request.form['priority']
+
+        assigned_user_id = request.form['assignedTo']
+        assigned_user = User.query.get(assigned_user_id)
+        print(f"Assigned user ID: {assigned_user_id}, Found user: {assigned_user.id}")
+
+        if assigned_user:
+            task.assignedTo = assigned_user.id  # Store new user ID
+        print(f"Task assigned to {task.assignedTo}")
+
+        # Link the task to the assigned user in `user_tasks`
+        UserTask.query.filter_by(task_id=task.id).delete()  # Remove existing link
+        db_sessions.commit()  # Save changes before adding new link
+        user_task_entry = UserTask(user_id=assigned_user.id, task_id=task.id)
+        db_sessions.add(user_task_entry)
+        db_sessions.commit()  # Save changes
+        print("Assigned to updated successfully.")
+        flash('Task updated successfully!', category='success')
+        return redirect(url_for('dashboard'))
+
+    user_tasks = (
+        db_sessions.query(Task)
+        .join(UserTask, Task.id == UserTask.task_id)
+        .filter(UserTask.user_id == current_user.id)
+        .all()
+    )
+
+    users = User.query.all()  # Get all users for dropdown
+    return redirect(url_for('dashboard'), task=task, users=users, user_tasks=user_tasks)
+    # return render_template('eddit_task.html', task=task, users=users)
+
+
+@app.route('/delete_task/<int:task_id>', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    task = Task.query.get(task_id)
+    print(f"Found task: {task.name}")
+
+    # Remove task-user relationship
+    UserTask.query.filter_by(task_id=task.id).delete()
+    print("Removed task-user relationship.")
+
+    # Remove the task itself
+    db_sessions.delete(task)
+    db_sessions.commit()
+    print("Task deleted from database.")
+
+    flash('Task deleted successfully!', category='success')
+    return redirect(url_for('dashboard'))
 
 @app.errorhandler(401)
 def unauthorized(e):

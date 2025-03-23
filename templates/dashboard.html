@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        // Form validation, no empty fields, valid email, password requirements
+        function validateForm() {
+            var email = document.getElementById('taskName').value;
+            var password = document.getElementById('description').value;
+            var username = document.getElementById('startDate').value;
+            var firstName = document.getElementById('dueDate').value;
+            var lastName = document.getElementById('category').value;
+            var birthDate = document.getElementById('status').value;
+            var birthDate = document.getElementById('priority').value;
+            var assignedTo = document.getElementById('assignedTo').value;
+            
+            return true;
+        }
+    </script>
+
+</head>
+<body>
+    <a href="/logout"><button type="button">Logout</button></a>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Task Management Dashboard</h1>
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Task Name</th>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assigned To</th>
+                </tr>
+            </thead>
+            <tbody id="taskTableBody">
+                <!-- Rows will be dynamically populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTaskModalLabel">Add New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTaskForm" action=/dashboard method="POST" onsubmit="return validateForm()">
+                        <div class="mb-3">
+                            <label for="taskName" class="form-label">Task Name</label>
+                            <input type="text" class="form-control" id="taskName" name="taskName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="description" name="description" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="datetime-local" class="form-control" id="startDate" name="startDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dueDate" class="form-label">Due Date</label>
+                            <input type="datetime-local" class="form-control" id="dueDate" name="dueDate" required>
+                        </div>
+                        <!-- FIXME: Add dropdown select box options for category, status, and priority -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-control" id="category" name="category" required>
+                                <option value="Work">Work</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <!-- <input type="text" class="form-control" id="category" required> -->
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <!-- FIXME: Add received and accepted after adding manager -->
+                            <select class="form-control" id="status" name="status" required>
+                                <option value="Not started">Not Started</option>
+                                <option value="In Progrss">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="On Hold">On Hold</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <!-- <input type="text" class="form-control" id="status" required> -->
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-control" id="priority" name="priority" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                            <!-- <input type="text" class="form-control" id="priority" required> -->
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignedTo" class="form-label">Assigned To</label>
+                            <select class="form-control" id="assignedTo" name="assignedTo" required>
+                                <option value="user1_username">User 1</option>
+                                <option value="admin_username">Admin</option> <!-- FIXME:Change values -->
+                            </select>
+                            <!-- <input type="text" class="form-control" id="assignedTo" required> -->
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Task</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // const tasks = [
+        //     { taskName: "Task 1", description:"First task, yay", startDate:"2023-09-025", dueDate: "2023-10-01", category: "Work", status: "Pending", priority: "High", assignedTo: "admin" },
+        //     { taskName: "Task 2", description:"Second task :)", startDate:"2023-09-025", dueDate: "2023-10-05", category: "Personal", status: "Completed", priority: "Low", assignedTo: "admin" }
+        // ];
+
+        const taskTableBody = document.getElementById('taskTableBody');
+
+        function renderTasks() {
+            taskTableBody.innerHTML = '';
+            tasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${task.taskName}</td>
+                    <td>${task.description}</td>
+                    <td>${task.startDate}</td>
+                    <td>${task.dueDate}</td>
+                    <td>${task.category}</td>
+                    <td>${task.status}</td>
+                    <td>${task.priority}</td>
+                    <td>${task.assignedTo}</td>
+                `;
+                taskTableBody.appendChild(row);
+            });
+        }
+
+        renderTasks();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

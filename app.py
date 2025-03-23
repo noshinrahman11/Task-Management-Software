@@ -70,6 +70,13 @@ def register():
             return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
     return render_template('register.html')
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out successfully!', category='info')
+    return redirect(url_for('index'))
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():

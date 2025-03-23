@@ -1,3 +1,6 @@
+# When making changes to models, delete database.db and run the following command in the terminal:
+# python -c "from database import init_db; init_db()"
+
 from flask_login import UserMixin
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
@@ -48,7 +51,7 @@ class User(Base, UserMixin):
 # Table for tasks
 class Task(Base):
     __tablename__ = 'tasks'
-    task_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String(50))
     description = Column(String(140))
     startDate = Column(DateTime)
@@ -71,7 +74,7 @@ class Task(Base):
 # Table for projects
 class Project(Base):
     __tablename__ = 'projects'
-    project_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String(50))
     description = Column(String(140))
     status = Column(Integer)

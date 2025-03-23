@@ -77,8 +77,9 @@ def dashboard():
         # Add new event to user's event list
         taskName = request.form['taskName']
         description = request.form['description']
-        startDate = request.form['startDate']
-        dueDate = request.form['dueDate']
+        startDate = datetime.strptime(request.form['startDate'], "%Y-%m-%dT%H:%M")
+        dueDate = datetime.strptime(request.form['dueDate'], "%Y-%m-%dT%H:%M")
+
         category = request.form['category']
         status = request.form['status']
         priority = request.form['priority']

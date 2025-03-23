@@ -133,9 +133,13 @@
                                     <div class="mb-3">
                                         <label for="assignedTo" class="form-label">Assigned To</label>
                                         <select class="form-control" name="assignedTo">
-                                            {% for user in users %}
-                                            <option value="{{ user.id }}" {% if task.assignedTo == user.id %}selected{% endif %}>{{ user.username }}</option>
-                                            {% endfor %}
+                                            {% if user.Role == "Staff"%}
+                                                <option value="{{ user.id }}" selected>{{ user.username }}</option>
+                                            {% else %}
+                                                {% for user in users %}
+                                                <option value="{{ user.id }}" {% if task.assignedTo == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                                {% endfor %}
+                                            {% endif %}
                                         </select>
                                     </div>
                                     <!-- Submit Button was here before -->
@@ -231,9 +235,13 @@
                         <div class="mb-3">
                             <label for="assignedTo" class="form-label">Assigned To</label>
                             <select class="form-control" id="assignedTo" name="assignedTo" required>
-                                {% for user in users %}
+                                {% if current_user.Role == 'Manager' or current_user.Role == 'Admin' %}
+                                    {% for user in users %}
                                     <option value="{{ user.id }}">{{ user.username }}</option>
-                                {% endfor %}
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="{{ user.id }}" selected>{{ user.username }}</option>
+                                {% endif %}
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Task</button>

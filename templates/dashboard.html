@@ -34,11 +34,35 @@
             
             return true;
         }
+
+        //--------------------------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', function () {
+        let table = document.querySelector('table tbody');
+        let rows = Array.from(table.querySelectorAll('tr'));
+
+        // Sorting function for task priority
+        const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+
+        rows.sort((rowA, rowB) => {
+            let priorityA = rowA.cells[6].textContent.trim();  // Assuming priority is in the 7th column (index 6)
+            let priorityB = rowB.cells[6].textContent.trim();
+            return priorityOrder[priorityA] - priorityOrder[priorityB];
+        });
+
+        // Reorder rows in the table
+        rows.forEach(row => table.appendChild(row));
+    });
     </script>
+
 
 </head>
 <body>
-    <a href="/logout"><button type="button">Logout</button></a>
+    
+    <div class="logout-button">
+        <a href="/logout">
+            <button type="button">Logout</button>
+        </a>
+    </div>        
     <div class="container mt-5">
         <h1 class="text-center mb-4">Task Management Dashboard</h1>
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
@@ -60,7 +84,7 @@
             <tbody id="taskTableBody" method="GET" action="/dashboard">
                 <!-- Rows will be dynamically populated here -->
                 {% for task in tasks %}
-                <tr>
+                <tr class="priority-{{ task.priority|lower }}">
                     <td>{{ task.name }}</td>
                     <td>{{ task.description }}</td>
                     <td>{{ task.startDate }}</td>

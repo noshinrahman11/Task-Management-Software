@@ -89,21 +89,17 @@ def dashboard():
         category = request.form['category']
         status = request.form['status']
         priority = request.form['priority']
-        assignedTo_username = request.form['assignedTo']  # This is a username
-        # assignedTo = request.form['assignedTo'] # This should be a username
+        assignedTo_username = request.form['assignedTo']  # This is a user ID, not username
+        # assignedTo_username = request.form['assignedTo']  # This is a username
 
         print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}")
 
         assigned_user = User.query.get(request.form['assignedTo'])  # Fetch by user ID
-        # assigned_user = User.query.filter_by(username=assignedTo_username).first()
-        # assigned_user = User.query.filter_by(username=assignedTo).first()
         if not assigned_user:
             flash('Assigned user not found!', category='danger')
             return redirect(url_for('dashboard'))
 
         new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username)
-        # new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo)
-         # Create a new task instance and add it to the database
         
         db_sessions.add(new_task)
         db_sessions.commit()

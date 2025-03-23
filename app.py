@@ -7,7 +7,8 @@ from database import init_db, db_sessions
 from flask_session import Session
 import re
 from datetime import datetime
-from email_notif import send_email, send_task_notification
+from email_notif import send_task_notification, check_task_deadlines
+import time
 
 ### When manually entering user, use this to enter hashed password
 # from werkzeug.security import generate_password_hash
@@ -214,5 +215,9 @@ if __name__ == "__main__":
         width=800,
         height=600,
         ).run()
+    
+    while True:
+        check_task_deadlines()  # Run the function
+        time.sleep(60)  # Wait for 1 hour before checking again
     
     # make api call in js

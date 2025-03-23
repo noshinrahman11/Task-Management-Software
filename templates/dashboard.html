@@ -134,12 +134,18 @@
                                     <div class="mb-3">
                                         <label for="assignedTo" class="form-label">Assigned To</label>
                                         <select class="form-control" name="assignedTo">
-                                            {% if user.Role == "Staff"%}
-                                                <option value="{{ user.id }}" selected>{{ user.username }}</option>
-                                            {% else %}
+                                            {% if user.Role == "Admin"%}
                                                 {% for user in users %}
-                                                <option value="{{ user.id }}" {% if task.assignedTo == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                                    <option value="{{ user.id }}" {% if task.assignedTo == user.id %}selected{% endif %}>{{ user.username }}</option>
                                                 {% endfor %}
+                                            {% elif user.Role == "Manager"%}
+                                                {% for user in users %}
+                                                    {% if user.Role == 'Staff' %}
+                                                        <option value="{{ user.id }}" {% if task.assignedTo == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                <option value="{{ user.id }}" selected>{{ user.username }}</option>
                                             {% endif %}
                                         </select>
                                     </div>
@@ -236,9 +242,15 @@
                         <div class="mb-3">
                             <label for="assignedTo" class="form-label">Assigned To</label>
                             <select class="form-control" id="assignedTo" name="assignedTo" required>
-                                {% if current_user.Role == 'Manager' or current_user.Role == 'Admin' %}
+                                {% if current_user.Role == 'Admin' %}
                                     {% for user in users %}
-                                    <option value="{{ user.id }}">{{ user.username }}</option>
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+                                    {% endfor %}
+                                {% elif current_user.Role == 'Manager' %}
+                                    {% for user in users %}
+                                        {% if user.Role == 'Staff' %}
+                                            <option value="{{ user.id }}">{{ user.username }}</option>
+                                        {% endif %}
                                     {% endfor %}
                                 {% else %}
                                     <option value="{{ user.id }}" selected>{{ user.username }}</option>

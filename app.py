@@ -131,6 +131,52 @@ def dashboard():
     # user_tasks = Task.query.filter_by(assignedTo=current_user.username).all()
     return render_template('dashboard.html', tasks=user_tasks, user=current_user, users=users)
 
+@app.route('/edit_task/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+def edit_task(task_id):
+    task = Task.query.get(task_id)
+
+    if request.method == 'POST':
+        task.name = request.form['taskName']
+        task.description = request.form['description']
+        task.startDate = datetime.strptime(request.form['startDate'], "%Y-%m-%dT%H:%M")
+        task.dueDate = datetime.strptime(request.form['dueDate'], "%Y-%m-%dT%H:%M")
+        task.category = request.form['category']
+        task.status = request.form['status']
+        task.priority = request.form['priority']
+
+        assigned_user_id = request.form['assignedTo']
+        assigned_user = User.query.get(assigned_user_id)
+
+        if assigned_user:
+            task.assignedTo = assigned_user.id  # Store new user ID
+
+        db_sessions.commit()  # Save changes
+        flash('Task updated successfully!', category='success')
+        return redirect(url_for('dashboard'))
+
+    users = User.query.all()  # Get all users for dropdown
+    return render_template('edit_task.html', task=task, users=users)
+
+
+@app.route('/delete_task/<int:task_id>', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    task = Task.query.get(task_id)
+    print(f"Found task: {task.name}")
+
+    # Remove task-user relationship
+    UserTask.query.filter_by(task_id=task.id).delete()
+    print("Removed task-user relationship.")
+
+    # Remove the task itself
+    db_sessions.delete(task)
+    db_sessions.commit()
+    print("Task deleted from database.")
+
+    flash('Task deleted successfully!', category='success')
+    return redirect(url_for('dashboard'))
+
 @app.errorhandler(401)
 def unauthorized(e):
     return render_template("login.html")

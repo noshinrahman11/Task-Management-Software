@@ -42,6 +42,7 @@
         <h1 class="text-center mb-4">Task Management Dashboard</h1>
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
         <table class="table table-bordered table-striped">
+            <!-- <caption>{{current_user.username}}'s Task List</caption> -->
             <thead class="table-dark">
                 <tr>
                     <th>Task Name</th>
@@ -54,8 +55,20 @@
                     <th>Assigned To</th>
                 </tr>
             </thead>
-            <tbody id="taskTableBody">
+            <tbody id="taskTableBody" method="GET" action="/dashboard">
                 <!-- Rows will be dynamically populated here -->
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.description }}</td>
+                    <td>{{ task.startDate }}</td>
+                    <td>{{ task.dueDate }}</td>
+                    <td>{{ task.category }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.priority }}</td>
+                    <td>{{ task.assignedTo }}</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -86,7 +99,6 @@
                             <label for="dueDate" class="form-label">Due Date</label>
                             <input type="datetime-local" class="form-control" id="dueDate" name="dueDate" required>
                         </div>
-                        <!-- FIXME: Add dropdown select box options for category, status, and priority -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
                             <select class="form-control" id="category" name="category" required>
@@ -94,14 +106,13 @@
                                 <option value="Personal">Personal</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <!-- <input type="text" class="form-control" id="category" required> -->
                         </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <!-- FIXME: Add received and accepted after adding manager -->
                             <select class="form-control" id="status" name="status" required>
                                 <option value="Not started">Not Started</option>
-                                <option value="In Progrss">In Progress</option>
+                                <option value="In Progress">In Progress</option>
                                 <option value="Completed">Completed</option>
                                 <option value="On Hold">On Hold</option>
                                 <option value="Cancelled">Cancelled</option>
@@ -120,8 +131,9 @@
                         <div class="mb-3">
                             <label for="assignedTo" class="form-label">Assigned To</label>
                             <select class="form-control" id="assignedTo" name="assignedTo" required>
-                                <option value="user1_username">User 1</option>
-                                <option value="admin_username">Admin</option> <!-- FIXME:Change values -->
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.username }}</option>
+                                {% endfor %}
                             </select>
                             <!-- <input type="text" class="form-control" id="assignedTo" required> -->
                         </div>
@@ -138,27 +150,27 @@
         //     { taskName: "Task 2", description:"Second task :)", startDate:"2023-09-025", dueDate: "2023-10-05", category: "Personal", status: "Completed", priority: "Low", assignedTo: "admin" }
         // ];
 
-        const taskTableBody = document.getElementById('taskTableBody');
+        // const taskTableBody = document.getElementById('taskTableBody');
 
-        function renderTasks() {
-            taskTableBody.innerHTML = '';
-            tasks.forEach(task => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${task.taskName}</td>
-                    <td>${task.description}</td>
-                    <td>${task.startDate}</td>
-                    <td>${task.dueDate}</td>
-                    <td>${task.category}</td>
-                    <td>${task.status}</td>
-                    <td>${task.priority}</td>
-                    <td>${task.assignedTo}</td>
-                `;
-                taskTableBody.appendChild(row);
-            });
-        }
+        // function renderTasks() {
+        //     taskTableBody.innerHTML = '';
+        //     tasks.forEach(task => {
+        //         const row = document.createElement('tr');
+        //         row.innerHTML = `
+        //             <td>${task.taskName}</td>
+        //             <td>${task.description}</td>
+        //             <td>${task.startDate}</td>
+        //             <td>${task.dueDate}</td>
+        //             <td>${task.category}</td>
+        //             <td>${task.status}</td>
+        //             <td>${task.priority}</td>
+        //             <td>${task.assignedTo}</td>
+        //         `;
+        //         taskTableBody.appendChild(row);
+        //     });
+        // }
 
-        renderTasks();
+        // renderTasks();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

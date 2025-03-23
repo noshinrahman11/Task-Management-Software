@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from flaskwebgui import FlaskUI
 from __init__ import create_app
-from models import User, Task, Project 
+from models import User, Task, Project, UserTask, UserProject, ProjectTask 
 from database import init_db, db_sessions
 from flask_session import Session
 import re
@@ -86,31 +86,54 @@ def dashboard():
         description = request.form['description']
         startDate = datetime.strptime(request.form['startDate'], "%Y-%m-%dT%H:%M")
         dueDate = datetime.strptime(request.form['dueDate'], "%Y-%m-%dT%H:%M")
-
         category = request.form['category']
         status = request.form['status']
         priority = request.form['priority']
+        assignedTo_username = request.form['assignedTo']  # This is a username
+        # assignedTo = request.form['assignedTo'] # This should be a username
 
-        print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}")
+        print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}")
 
-        new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=current_user.username)
+        assigned_user = User.query.get(request.form['assignedTo'])  # Fetch by user ID
+        # assigned_user = User.query.filter_by(username=assignedTo_username).first()
+        # assigned_user = User.query.filter_by(username=assignedTo).first()
+        if not assigned_user:
+            flash('Assigned user not found!', category='danger')
+            return redirect(url_for('dashboard'))
+
+        new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username)
+        # new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo)
          # Create a new task instance and add it to the database
         
         db_sessions.add(new_task)
         db_sessions.commit()
         print("Task added successfully to the database.")
         
+        # Link the task to the assigned user in `user_tasks`
+        user_task_entry = UserTask(user_id=assigned_user.id, task_id=new_task.id)
+        db_sessions.add(user_task_entry)
+        db_sessions.commit()
+        print("Task linked to user successfully.")
+
         flash('Task added successfully!', category='success')
         return redirect(url_for('dashboard'))
     
+    user_tasks = (
+        db_sessions.query(Task)
+        .join(UserTask, Task.id == UserTask.task_id)
+        .filter(UserTask.user_id == current_user.id)
+        .all()
+    )
+    
+    users = User.query.all()
     # Retrieve user's tasks from the database
     # user_tasks = current_user.tasks
     # return render_template('dashboard.html', tasks=user_tasks, user=current_user)
 
     # return render_template('dashboard.html', user=current_user)
 
-    user_tasks = Task.query.filter_by(assignedTo=current_user.username).all()
-    return render_template('dashboard.html', tasks=user_tasks, user=current_user)
+    # user_tasks = Task.query.filter_by(assignedTo=current_user.username).all()
+    return render_template('dashboard.html', tasks=user_tasks, user=current_user, users=users)
 
 @app.errorhandler(401)
 def unauthorized(e):

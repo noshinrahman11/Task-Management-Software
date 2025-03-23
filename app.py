@@ -7,6 +7,7 @@ from database import init_db, db_sessions
 from flask_session import Session
 import re
 from datetime import datetime
+from email_notif import send_email, send_task_notification
 
 ### When manually entering user, use this to enter hashed password
 # from werkzeug.security import generate_password_hash
@@ -14,6 +15,9 @@ from datetime import datetime
 # password = "@dminPassword1"
 # hashed_password = generate_password_hash(password)
 # print(hashed_password)
+
+# email = taskmanagementsystemcs264@gmail.com
+# password = taskGroup7
 
 app = create_app()
 
@@ -113,6 +117,12 @@ def dashboard():
         print("Task linked to user successfully.")
 
         flash('Task added successfully!', category='success')
+
+        # Send email notification
+        assigned_user = User.query.get(assigned_user.id)  # Fetch user details
+        if assigned_user and assigned_user.email:
+            send_task_notification(new_task, assigned_user.email)
+
         return redirect(url_for('dashboard'))
     
     user_tasks = (

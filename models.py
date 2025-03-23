@@ -48,7 +48,7 @@ class User(Base, UserMixin):
 # Table for tasks
 class Task(Base):
     __tablename__ = 'tasks'
-    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer, primary_key=True)
     name = Column(String(50))
     description = Column(String(140))
     startDate = Column(DateTime)
@@ -58,23 +58,33 @@ class Task(Base):
     priority = Column(String(10))
     assignedTo = Column(Integer, ForeignKey('users.id'))
 
-    def __init__(self, name=None, user_id=None):
+    def __init__(self, name=None, description=None, startDate=None, dueDate=None, category=None, status=None, priority=None, assignedTo=None):
         self.name = name
-
+        self.description = description
+        self.startDate = startDate
+        self.dueDate = dueDate
+        self.category = category
+        self.status = status
+        self.priority = priority
+        self.assignedTo = assignedTo
 
 # Table for projects
 class Project(Base):
     __tablename__ = 'projects'
-    id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, primary_key=True)
     name = Column(String(50))
     description = Column(String(140))
     status = Column(Integer)
     StartDate = Column(DateTime)
     EndDate = Column(DateTime)
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, description=None, status=None, StartDate=None, EndDate=None):
         self.name = name
-
+        self.description = description
+        self.status = status
+        self.StartDate = StartDate
+        self.EndDate = EndDate
+        
 
 # Table for many-to-many relationship between users and tasks
 class UserTask(Base):

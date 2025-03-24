@@ -11,12 +11,8 @@ from email_notif import send_task_notification, check_task_deadlines
 import time
 from reports import generate_progress_pie_chart
 
-### When manually entering user, use this to enter hashed password
-# from werkzeug.security import generate_password_hash
-
-# password = "@dminPassword1"
-# hashed_password = generate_password_hash(password)
-# print(hashed_password)
+# Admin password = "@dminPassword1"
+# User# password = P@ssword#
 
 # email = taskmanagementsystemcs264@gmail.com
 # password = taskGroup7
@@ -31,8 +27,6 @@ def index():
     return render_template("index.html")
 
 #do hashing in post section and login in get section
-### Right now, the only user is username: admin, password: @dminPassword1, the hashed password is in db
-### Pssswords are P@ssword#
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':

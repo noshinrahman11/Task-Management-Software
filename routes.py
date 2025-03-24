@@ -1,8 +1,11 @@
-from flask import request, redirect, url_for, flash
+from flask import Blueprint, request, redirect, url_for, flash
 from datetime import datetime
 from calendar_sync import add_task_to_calendar
 
-@app.route('/create_task', methods=['POST'])
+# Create a Blueprint
+routes = Blueprint('routes', __name__)
+
+@routes.route('/create_task', methods=['POST'])
 def create_task():
     task_title = request.form['title']
     task_description = request.form['description']

@@ -9,13 +9,10 @@ import re
 from datetime import datetime
 from email_notif import send_task_notification, check_task_deadlines
 import time
+from reports import generate_progress_pie_chart
 
-### When manually entering user, use this to enter hashed password
-# from werkzeug.security import generate_password_hash
-
-# password = "@dminPassword1"
-# hashed_password = generate_password_hash(password)
-# print(hashed_password)
+# Admin password = "@dminPassword1"
+# User# password = P@ssword#
 
 # email = taskmanagementsystemcs264@gmail.com
 # password = taskGroup7
@@ -30,8 +27,6 @@ def index():
     return render_template("index.html")
 
 #do hashing in post section and login in get section
-### Right now, the only user is username: admin, password: @dminPassword1, the hashed password is in db
-### Pssswords are P@ssword#
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -75,6 +70,12 @@ def register():
             flash('Registration successful! Welcome!', category='success')
             return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
     return render_template('register.html')
+
+@app.route("/reports")
+@login_required
+def reports():
+    chart_html = generate_progress_pie_chart(current_user.id)
+    return render_template("reports.html", chart_html=chart_html)
 
 @app.route('/logout')
 @login_required
@@ -134,6 +135,8 @@ def dashboard():
     )
     
     users = User.query.all()
+
+    generate_progress_pie_chart(current_user.id)
 
     return render_template('dashboard.html', tasks=user_tasks, user=current_user, users=users)
 

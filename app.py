@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from email_notif import send_task_notification, check_task_deadlines
 import time
+from reports import generate_progress_pie_chart
 
 ### When manually entering user, use this to enter hashed password
 # from werkzeug.security import generate_password_hash
@@ -76,6 +77,12 @@ def register():
             return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
     return render_template('register.html')
 
+@app.route("/reports")
+@login_required
+def reports():
+    chart_html = generate_progress_pie_chart(current_user.id)
+    return render_template("reports.html", chart_html=chart_html)
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -134,6 +141,8 @@ def dashboard():
     )
     
     users = User.query.all()
+
+    generate_progress_pie_chart(current_user.id)
 
     return render_template('dashboard.html', tasks=user_tasks, user=current_user, users=users)
 

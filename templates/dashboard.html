@@ -40,13 +40,28 @@
         let table = document.querySelector('table tbody');
         let rows = Array.from(table.querySelectorAll('tr'));
 
-        // Sorting function for task priority
+        // Sorting priority first, then category, then due date
         const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+        const categoryOrder = { 'Work': 1, 'Personal': 2, 'Other': 3 };
 
         rows.sort((rowA, rowB) => {
-            let priorityA = rowA.cells[6].textContent.trim();  // Assuming priority is in the 7th column (index 6)
+            let priorityA = rowA.cells[6].textContent.trim();  // Priority column index
             let priorityB = rowB.cells[6].textContent.trim();
-            return priorityOrder[priorityA] - priorityOrder[priorityB];
+            let categoryA = rowA.cells[4].textContent.trim();  // Category column index
+            let categoryB = rowB.cells[4].textContent.trim();
+            let dueDateA = new Date(rowA.cells[5].textContent.trim());  // Due date column index
+            let dueDateB = new Date(rowB.cells[5].textContent.trim());
+
+            // First sort by priority
+            let priorityComparison = priorityOrder[priorityA] - priorityOrder[priorityB];
+            if (priorityComparison !== 0) return priorityComparison;
+
+            // If priorities are equal, sort by category
+            let categoryComparison = categoryOrder[categoryA] - categoryOrder[categoryB];
+            if (categoryComparison !== 0) return categoryComparison;
+
+            // If categories are also equal, sort by due date
+            return dueDateA - dueDateB;
         });
 
         // Reorder rows in the table

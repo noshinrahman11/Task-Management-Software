@@ -8,9 +8,9 @@ from models import Task, User
 # In powershell:
 # $env:MAIL_USERNAME="taskmanagemetsystemcs264@gmail.com"
 # $env:MAIL_PASSWORD="aebn jexs dokr whwb"
+
 # Christine: jdls kkaj zbne hzva
 # Nandanie: valn itnl gbnt nxpt
-
 
 def send_email(subject, recipients, body, html=None):
     with current_app.app_context():

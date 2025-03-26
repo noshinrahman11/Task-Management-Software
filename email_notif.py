@@ -35,7 +35,7 @@ def send_task_notification(task, recipient_email):
     """
     send_email(subject, [recipient_email], body)
 
-def send_task_deadline_notification(recipient_email, task, due_date):
+def send_task_deadline_notification(recipient_email, task, dueDate):
     subject = f"Deadline Approaching: {task.name} due soon"
     body = f"""
     Hello,

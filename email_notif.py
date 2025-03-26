@@ -4,6 +4,7 @@ from __init__ import mail
 from datetime import datetime, timedelta
 from models import Task, User
 
+
 # In powershell:
 # $env:MAIL_USERNAME="taskmanagemetsystemcs264"
 # $env:MAIL_PASSWORD="aebn jexs dokr whwb"
@@ -59,7 +60,7 @@ def check_task_deadlines():
         print(f"Checking tasks at {now} for reminder at {reminder_time}")
 
         # Find tasks where due_date is exactly 24 hours from now
-        tasks = Task.query.filter(Task.due_date <= reminder_time, Task.due_date > now).all()
+        tasks = Task.query.filter(Task.dueDate <= reminder_time, Task.dueDate > now).all()
 
         print(f"Found {len(tasks)} tasks due in 24 hours.")
 
@@ -67,7 +68,7 @@ def check_task_deadlines():
             assigned_user = User.query.get(task.assignedTo)
 
             if assigned_user:
-                send_task_deadline_notification(assigned_user.email, task.title, task.due_date)
+                send_task_deadline_notification(assigned_user.email, task.title, task.dueDate)
                 print(f"Sent deadline notification to {assigned_user.email} for task {task.title}.")
 
         print(f"Checked tasks at {now}. Sent {len(tasks)} notifications.")

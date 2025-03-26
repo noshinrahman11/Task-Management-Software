@@ -8,13 +8,13 @@ from models import Task, User
 # $env:MAIL_USERNAME="taskmanagemetsystemcs264"
 # $env:MAIL_PASSWORD="aebn jexs dokr whwb"
 
-def send_email(subject, sender, recipients, body, html=None):
+def send_email(subject, recipients, body, html=None):
     with current_app.app_context():
-        msg = Message(subject, sender=sender, recipients=recipients, body=body, html=html)
+        msg = Message(subject, recipients=recipients, body=body, html=html)
         mail.send(msg)
 
 
-def send_task_notification(task, sender, recipient_email):
+def send_task_notification(task, recipient_email):
     subject = f"New Task Assigned: {task.name}"
     body = f"""
     Hello,
@@ -30,7 +30,7 @@ def send_task_notification(task, sender, recipient_email):
     Regards,
     Task Management System
     """
-    send_email(subject, sender, [recipient_email], body)
+    send_email(subject, [recipient_email], body)
 
 def send_task_deadline_notification(task, recipient_email):
     subject = f"Deadline Approaching: {task.name} due soon"

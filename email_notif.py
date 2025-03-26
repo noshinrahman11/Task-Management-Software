@@ -8,6 +8,8 @@ from models import Task, User
 # In powershell:
 # $env:MAIL_USERNAME="taskmanagemetsystemcs264@gmail.com"
 # $env:MAIL_PASSWORD="aebn jexs dokr whwb"
+# Christine: jdls kkaj zbne hzva
+
 
 def send_email(subject, recipients, body, html=None):
     with current_app.app_context():
@@ -33,7 +35,7 @@ def send_task_notification(task, recipient_email):
     """
     send_email(subject, [recipient_email], body)
 
-def send_task_deadline_notification(recipient_email, task, due_date):
+def send_task_deadline_notification(recipient_email, task, dueDate):
     subject = f"Deadline Approaching: {task.name} due soon"
     body = f"""
     Hello,

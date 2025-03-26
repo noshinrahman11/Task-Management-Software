@@ -4,6 +4,10 @@ from __init__ import mail
 from datetime import datetime, timedelta
 from models import Task, User
 
+# In powershell:
+# $env:MAIL_USERNAME="taskmanagemetsystemcs264"
+# $env:MAIL_PASSWORD="aebn jexs dokr whwb"
+
 def send_email(subject, sender, recipients, body, html=None):
     with current_app.app_context():
         msg = Message(subject, sender=sender, recipients=recipients, body=body, html=html)

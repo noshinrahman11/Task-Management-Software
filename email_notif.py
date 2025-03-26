@@ -6,7 +6,7 @@ from models import Task, User
 
 
 # In powershell:
-# $env:MAIL_USERNAME="taskmanagemetsystemcs264"
+# $env:MAIL_USERNAME="taskmanagemetsystemcs264@gmail.com"
 # $env:MAIL_PASSWORD="aebn jexs dokr whwb"
 
 def send_email(subject, recipients, body, html=None):

@@ -10,6 +10,7 @@ from datetime import datetime
 from email_notif import send_task_notification, check_task_deadlines
 import time
 from reports import generate_progress_pie_chart
+import threading
 
 # Admin password = "@dminPassword1"
 # User# password = P@ssword#
@@ -219,8 +220,11 @@ if __name__ == "__main__":
         height=600,
         ).run()
     
-    while True:
-        check_task_deadlines()  # Run the function
-        time.sleep(60)  # Wait for 1 hour before checking again
-        print("Checking task deadlines...")
-    # make api call in js
+    def run_deadline_checker():
+        while True:
+            check_task_deadlines()  # Run the function
+            print("Checking task deadlines...")
+            time.sleep(60)  # Wait for 1 hour before checking again
+    
+    t1 = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
+    t1.start()# make api call in js

@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from flaskwebgui import FlaskUI
 from __init__ import create_app
-from models import User, Task, Project, UserTask, UserProject, ProjectTask 
+from models import User, Task, UserTask, Project, UserProject, ProjectTask 
 from database import init_db, db_sessions
 from flask_session import Session
 import re
@@ -10,11 +10,12 @@ from datetime import datetime
 from email_notif import send_task_notification, check_task_deadlines
 import time
 from reports import generate_progress_pie_chart
+import threading
 
 # Admin password = "@dminPassword1"
 # User# password = P@ssword#
 
-# email = taskmanagementsystemcs264@gmail.com
+# email = 'taskmanagementsystemcs264@gmail.com'
 # password = taskGroup7
 
 app = create_app()
@@ -219,8 +220,11 @@ if __name__ == "__main__":
         height=600,
         ).run()
     
-    while True:
-        check_task_deadlines()  # Run the function
-        time.sleep(60)  # Wait for 1 hour before checking again
+    def run_deadline_checker():
+        while True:
+            check_task_deadlines()  # Run the function
+            print("Checking task deadlines...")
+            time.sleep(60)  # Wait for 1 hour before checking again
     
-    # make api call in js
+    t1 = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
+    t1.start()# make api call in js

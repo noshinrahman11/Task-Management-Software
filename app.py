@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from flaskwebgui import FlaskUI
 from __init__ import create_app
-from models import User, Task, Project, UserTask, UserProject, ProjectTask 
+from models import User, Task, UserTask, Project, UserProject, ProjectTask 
 from database import init_db, db_sessions
 from flask_session import Session
 import re
@@ -222,5 +222,5 @@ if __name__ == "__main__":
     while True:
         check_task_deadlines()  # Run the function
         time.sleep(60)  # Wait for 1 hour before checking again
-    
+        print("Checking task deadlines...")
     # make api call in js

@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from flaskwebgui import FlaskUI
 from __init__ import create_app
-from models import User, Task, Project, UserTask, UserProject, ProjectTask 
+from models import User, Task, UserTask, Project, UserProject, ProjectTask 
 from database import init_db, db_sessions
 from flask_session import Session
 import re
@@ -14,7 +14,7 @@ from reports import generate_progress_pie_chart
 # Admin password = "@dminPassword1"
 # User# password = P@ssword#
 
-email = 'taskmanagementsystemcs264@gmail.com'
+# email = 'taskmanagementsystemcs264@gmail.com'
 # password = taskGroup7
 
 app = create_app()
@@ -123,7 +123,7 @@ def dashboard():
         # Send email notification
         assigned_user = User.query.get(assigned_user.id)  # Fetch user details
         if assigned_user and assigned_user.email:
-            send_task_notification(new_task, email, assigned_user.email)
+            send_task_notification(new_task, assigned_user.email)
 
         return redirect(url_for('dashboard'))
     
@@ -222,5 +222,5 @@ if __name__ == "__main__":
     while True:
         check_task_deadlines()  # Run the function
         time.sleep(60)  # Wait for 1 hour before checking again
-    
+        print("Checking task deadlines...")
     # make api call in js

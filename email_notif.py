@@ -73,9 +73,11 @@ def check_task_deadlines():
             assigned_user = User.query.get(task.assignedTo)
 
             if assigned_user:
-                # send_task_deadline_notification(assigned_user.email, task.name, task.description, task.dueDate)
-                send_task_deadline_notification(assigned_user.email, task)
+                #FIX: Check if task is not completed, cancelled or on hold
+                if task.status != "Completed" and task.status != "Cancelled" and task.status != "On Hold":
+                    # send_task_deadline_notification(assigned_user.email, task.name, task.description, task.dueDate)
+                    send_task_deadline_notification(assigned_user.email, task)
 
-                print(f"Sent deadline notification to {assigned_user.email} for task {task.name}.")
+                    print(f"Sent deadline notification to {assigned_user.email} for task {task.name}.")
 
-        print(f"Checked tasks at {now}. Sent {len(tasks)} notifications.")
+        print(f"Checked tasks at {now}.")

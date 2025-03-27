@@ -170,6 +170,7 @@ def edit_task(task_id):
         assigned_user = User.query.get(assigned_user_id)
         print(f"Assigned user ID: {assigned_user_id}, Found user: {assigned_user.id}")
 
+        # if the task is not being reassigned, then keep the same assignedBy, otherwise, the current user will be the new assigner(assignedBy)
         if task.assignedTo != assigned_user.id:
             task.assignedBy = current_user.id  # Update assignedBy to current user
             print(f"Task assigned by updated to {task.assignedBy}")

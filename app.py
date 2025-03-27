@@ -214,17 +214,35 @@ def not_found(e):
 if __name__ == "__main__":
     # app.run(host='localhost', port=5000, debug=True)
     
-    FlaskUI(app=app,
-        server="flask",
-        width=800,
-        height=600,
-        ).run()
+    # def run_flask():
+    #     print ("Starting Flask app...")
+    #     FlaskUI(app=app,
+    #         server="flask",
+    #         width=800,
+    #         height=600,
+    #         ).run()
+    #     flask_thread = threading.Thread(target=run_flask, name="Thread-f", daemon=True)  # Start the thread
+    #     flask_thread.start()
     
     def run_deadline_checker():
-        while True:
-            check_task_deadlines()  # Run the function
-            print("Checking task deadlines...")
-            time.sleep(60)  # Wait for 1 hour before checking again
-    
-    t1 = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
-    t1.start()# make api call in js
+        print ("Starting background thread for checking deadlines...")
+        with app.app_context():
+            while True:
+                check_task_deadlines()  # Run the function
+                print("Checking task deadlines...")
+                time.sleep(3600)  # Wait for 1 hour before checking again
+        
+    deadline_thread = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
+    deadline_thread.start()
+    print("Background thread started!")
+
+    print ("Starting Flask app...")
+    FlaskUI(app=app,
+            server="flask",
+            width=800,
+            height=600,
+            ).run()
+
+    # while True:
+    #     time.sleep(1)
+    # make api call in js

@@ -172,8 +172,8 @@ def edit_task(task_id):
 
         # if the task is not being reassigned, then keep the same assignedBy, otherwise, the current user will be the new assigner(assignedBy)
         if task.assignedTo != assigned_user.id:
-            task.assignedBy = current_user.id  # Update assignedBy to current user
-            print(f"Task assigned by updated to {task.assignedBy}")
+            task.assignedBy = current_user.username  # Update assignedBy to current user
+            print(f"Task assignedBy updated to {task.assignedBy}")
         else:
             task.assignedBy = task.assignedBy # Keep the same assignedBy
 

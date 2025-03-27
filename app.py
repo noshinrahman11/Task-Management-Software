@@ -131,12 +131,20 @@ def dashboard():
 
         return redirect(url_for('dashboard'))
     
+    # user_tasks = (
+    #     db_sessions.query(Task, User.username.label("assigned_by_username"))
+    #     .join(UserTask, Task.id == UserTask.task_id)
+    #     .join(User, Task.assignedBy == User.id)
+    #     .filter(UserTask.user_id == current_user.id)
+    #     .all()
+    # )
     user_tasks = (
         db_sessions.query(Task)
         .join(UserTask, Task.id == UserTask.task_id)
         .filter(UserTask.user_id == current_user.id)
         .all()
     )
+
     
     users = User.query.all()
 

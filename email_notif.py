@@ -6,11 +6,12 @@ from models import Task, User
 
 
 # In powershell:
-# $env:MAIL_USERNAME="taskmanagemetsystemcs264@gmail.com"
+# $env:MAIL_USERNAME="taskmanagementsystemcs264@gmail.com"
 # $env:MAIL_PASSWORD="aebn jexs dokr whwb"
 
 # Christine: jdls kkaj zbne hzva
 # Nandanie: valn itnl gbnt nxpt
+# Drew: wmhq xojg qdjx biuj
 
 def send_email(subject, recipients, body, html=None):
     with current_app.app_context():
@@ -23,7 +24,7 @@ def send_task_notification(task, recipient_email):
     body = f"""
     Hello,
 
-    You have been assigned a new task:
+    You have been assigned a new task
 
     Task: {task.name}
     Description: {task.description}
@@ -36,7 +37,7 @@ def send_task_notification(task, recipient_email):
     """
     send_email(subject, [recipient_email], body)
 
-def send_task_deadline_notification(recipient_email, task, dueDate):
+def send_task_deadline_notification(recipient_email, task):
     subject = f"Deadline Approaching: {task.name} due soon"
     body = f"""
     Hello,
@@ -56,9 +57,10 @@ def send_task_deadline_notification(recipient_email, task, dueDate):
 
 def check_task_deadlines():
     """Check for tasks that are due in 24 hours and send email notifications."""
+    print("Inside check_task_deadlines function...")
     with current_app.app_context():
         now = datetime.now()
-        reminder_time = now + timedelta(minutes=5)  # 24 hours from now
+        reminder_time = now + timedelta(hours=24)  # 24 hours from now
 
         print(f"Checking tasks at {now} for reminder at {reminder_time}")
 
@@ -71,7 +73,11 @@ def check_task_deadlines():
             assigned_user = User.query.get(task.assignedTo)
 
             if assigned_user:
-                send_task_deadline_notification(assigned_user.email, task.title, task.dueDate)
-                print(f"Sent deadline notification to {assigned_user.email} for task {task.title}.")
+                #FIX: Check if task is not completed, cancelled or on hold
+                if task.status != "Completed" and task.status != "Cancelled" and task.status != "On Hold":
+                    # send_task_deadline_notification(assigned_user.email, task.name, task.description, task.dueDate)
+                    send_task_deadline_notification(assigned_user.email, task)
 
-        print(f"Checked tasks at {now}. Sent {len(tasks)} notifications.")
+                    print(f"Sent deadline notification to {assigned_user.email} for task {task.name}.")
+
+        print(f"Checked tasks at {now}.")

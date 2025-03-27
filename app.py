@@ -98,16 +98,19 @@ def dashboard():
         status = request.form['status']
         priority = request.form['priority']
         assignedTo_username = request.form['assignedTo']  # This is a user ID, not username
+        assignedBy = current_user.username  # Task assigned by current user
         # assignedTo_username = request.form['assignedTo']  # This is a username
 
-        print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}")
+        print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}, {assignedBy}")
+        # print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}")
 
         assigned_user = User.query.get(request.form['assignedTo'])  # Fetch by user ID
         if not assigned_user:
             flash('Assigned user not found!', category='danger')
             return redirect(url_for('dashboard'))
 
-        new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username)
+        new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username, assignedBy=assignedBy)
+        # new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username)
         
         db_sessions.add(new_task)
         db_sessions.commit()
@@ -128,12 +131,20 @@ def dashboard():
 
         return redirect(url_for('dashboard'))
     
+    # user_tasks = (
+    #     db_sessions.query(Task, User.username.label("assigned_by_username"))
+    #     .join(UserTask, Task.id == UserTask.task_id)
+    #     .join(User, Task.assignedBy == User.id)
+    #     .filter(UserTask.user_id == current_user.id)
+    #     .all()
+    # )
     user_tasks = (
         db_sessions.query(Task)
         .join(UserTask, Task.id == UserTask.task_id)
         .filter(UserTask.user_id == current_user.id)
         .all()
     )
+
     
     users = User.query.all()
 
@@ -158,6 +169,13 @@ def edit_task(task_id):
         assigned_user_id = request.form['assignedTo']
         assigned_user = User.query.get(assigned_user_id)
         print(f"Assigned user ID: {assigned_user_id}, Found user: {assigned_user.id}")
+
+        # if the task is not being reassigned, then keep the same assignedBy, otherwise, the current user will be the new assigner(assignedBy)
+        if task.assignedTo != assigned_user.id:
+            task.assignedBy = current_user.id  # Update assignedBy to current user
+            print(f"Task assigned by updated to {task.assignedBy}")
+        else:
+            task.assignedBy = task.assignedBy # Keep the same assignedBy
 
         if assigned_user:
             task.assignedTo = assigned_user.id  # Store new user ID
@@ -214,17 +232,35 @@ def not_found(e):
 if __name__ == "__main__":
     # app.run(host='localhost', port=5000, debug=True)
     
-    FlaskUI(app=app,
-        server="flask",
-        width=800,
-        height=600,
-        ).run()
+    # def run_flask():
+    #     print ("Starting Flask app...")
+    #     FlaskUI(app=app,
+    #         server="flask",
+    #         width=800,
+    #         height=600,
+    #         ).run()
+    #     flask_thread = threading.Thread(target=run_flask, name="Thread-f", daemon=True)  # Start the thread
+    #     flask_thread.start()
     
     def run_deadline_checker():
-        while True:
-            check_task_deadlines()  # Run the function
-            print("Checking task deadlines...")
-            time.sleep(60)  # Wait for 1 hour before checking again
-    
-    t1 = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
-    t1.start()# make api call in js
+        print ("Starting background thread for checking deadlines...")
+        with app.app_context():
+            while True:
+                check_task_deadlines()  # Run the function
+                print("Checking task deadlines...")
+                time.sleep(3600)  # Wait for 1 hour before checking again
+        
+    deadline_thread = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
+    deadline_thread.start()
+    print("Background thread started!")
+
+    print ("Starting Flask app...")
+    FlaskUI(app=app,
+            server="flask",
+            width=800,
+            height=600,
+            ).run()
+
+    # while True:
+    #     time.sleep(1)
+    # make api call in js

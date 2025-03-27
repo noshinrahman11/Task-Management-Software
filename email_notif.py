@@ -11,8 +11,7 @@ from models import Task, User
 
 # Christine: jdls kkaj zbne hzva
 # Nandanie: valn itnl gbnt nxpt
-
-# wmhq xojg qdjx biuj
+# Drew: wmhq xojg qdjx biuj
 
 def send_email(subject, recipients, body, html=None):
     with current_app.app_context():

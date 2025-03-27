@@ -61,8 +61,10 @@ class Task(Base):
     status = Column(String(20))
     priority = Column(String(10))
     assignedTo = Column(Integer, ForeignKey('users.id'))
+    assignedBy = Column(Integer, ForeignKey('users.id'))
+    
 
-    def __init__(self, name=None, description=None, startDate=None, dueDate=None, category=None, status=None, priority=None, assignedTo=None):
+    def __init__(self, name=None, description=None, startDate=None, dueDate=None, category=None, status=None, priority=None, assignedTo=None, assignedBy=None):
         self.name = name
         self.description = description
         self.startDate = startDate
@@ -71,6 +73,7 @@ class Task(Base):
         self.status = status
         self.priority = priority
         self.assignedTo = assignedTo
+        self.assignedBy = assignedBy
 
 # Table for projects
 class Project(Base):

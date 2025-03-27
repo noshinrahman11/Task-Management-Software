@@ -93,7 +93,8 @@
                     <th>Category</th>
                     <th>Status</th>
                     <th>Priority</th>
-                    <th>Assigned To</th>
+                    <!-- <th>Assigned To</th> -->
+                    <th>Assigned By</th>
                     <th> </th>
                 </tr>
             </thead>
@@ -108,7 +109,8 @@
                     <td>{{ task.category }}</td>
                     <td>{{ task.status }}</td>
                     <td>{{ task.priority }}</td>
-                    <td>{{ task.assignedTo }}</td>
+                    <!-- <td>{{ task.assignedTo }}</td> -->
+                    <td>{{ task.assignedBy }}</td>
                     <td>
                         <!-- Edit Task Modal Trigger -->
                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal{{ task.id }}">

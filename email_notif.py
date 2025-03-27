@@ -24,7 +24,7 @@ def send_task_notification(task, recipient_email):
     body = f"""
     Hello,
 
-    You have been assigned a new task:
+    You have been assigned a new task
 
     Task: {task.name}
     Description: {task.description}

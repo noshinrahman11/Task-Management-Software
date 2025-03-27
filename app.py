@@ -98,16 +98,19 @@ def dashboard():
         status = request.form['status']
         priority = request.form['priority']
         assignedTo_username = request.form['assignedTo']  # This is a user ID, not username
+        assignedBy = current_user.username  # Task assigned by current user
         # assignedTo_username = request.form['assignedTo']  # This is a username
 
-        print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}")
+        print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}, {assignedBy}")
+        # print(f"Received task: {taskName}, {description}, {startDate}, {dueDate}, {category}, {status}, {priority}, {assignedTo_username}")
 
         assigned_user = User.query.get(request.form['assignedTo'])  # Fetch by user ID
         if not assigned_user:
             flash('Assigned user not found!', category='danger')
             return redirect(url_for('dashboard'))
 
-        new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username)
+        new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username, assignedBy=assignedBy)
+        # new_task = Task(name=taskName, description=description, startDate=startDate, dueDate=dueDate, category=category, status=status, priority=priority, assignedTo=assignedTo_username)
         
         db_sessions.add(new_task)
         db_sessions.commit()
@@ -158,6 +161,12 @@ def edit_task(task_id):
         assigned_user_id = request.form['assignedTo']
         assigned_user = User.query.get(assigned_user_id)
         print(f"Assigned user ID: {assigned_user_id}, Found user: {assigned_user.id}")
+
+        if task.assignedTo != assigned_user.id:
+            task.assignedBy = current_user.id  # Update assignedBy to current user
+            print(f"Task assigned by updated to {task.assignedBy}")
+        else:
+            task.assignedBy = task.assignedBy # Keep the same assignedBy
 
         if assigned_user:
             task.assignedTo = assigned_user.id  # Store new user ID

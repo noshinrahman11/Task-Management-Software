@@ -126,8 +126,8 @@ def dashboard():
 
         # Send email notification
         assigned_user = User.query.get(assigned_user.id)  # Fetch user details
-        if assigned_user and assigned_user.email:
-            send_task_notification(new_task, assigned_user.email)
+        # if assigned_user and assigned_user.email:
+        #     send_task_notification(new_task, assigned_user.email) #### REMEMBER TO UNCOMMENT THIS LINE
 
         return redirect(url_for('dashboard'))
     
@@ -138,19 +138,73 @@ def dashboard():
     #     .filter(UserTask.user_id == current_user.id)
     #     .all()
     # )
+
+    # Get all tasks assigned to the current user
     user_tasks = (
         db_sessions.query(Task)
         .join(UserTask, Task.id == UserTask.task_id)
         .filter(UserTask.user_id == current_user.id)
         .all()
     )
-
-    
+    # Get all users for dropdown
     users = User.query.all()
 
+    
+
+    # Filtering Tasks
+    filters = {
+        "status": request.args.getlist("status"),  # Get selected statuses
+        "priority": request.args.getlist("priority"),
+        "category": request.args.getlist("category"),
+        "assigned_by": request.args.getlist("assignedBy"),
+    }
+
+    # # Base query for user tasks
+    # query = (
+    #     db_sessions.query(Task)
+    #     .join(UserTask, Task.id == UserTask.task_id)
+    #     .filter(UserTask.user_id == current_user.id)
+    # )
+
+    filter_query = (
+        db_sessions.query(Task)
+        .join(UserTask, Task.id == UserTask.task_id)
+        .filter(UserTask.user_id == current_user.id)
+    )
+
+    # Apply filters only if options are selected
+    if filters["status"]:
+        filter_query = filter_query.filter(Task.status.in_(filters["status"]))
+        print(f"Filtering by status: {filters['status']}")
+    if filters["priority"]:
+        filter_query = filter_query.filter(Task.priority.in_(filters["priority"]))
+        print(f"Filtering by priority: {filters['priority']}")
+    if filters["category"]:
+        filter_query = filter_query.filter(Task.category.in_(filters["category"]))
+        print(f"Filtering by category: {filters['category']}")
+    if filters["assigned_by"]:
+        filter_query = filter_query.filter(Task.assignedBy.in_(filters["assigned_by"]))
+        print(f"Filtering by assigned by: {filters['assigned_by']}")
+        
+
+    user_tasks = filter_query.all()
+
+    # Get unique users who assigned tasks to current_user
+    assigned_by_users = (
+        db_sessions.query(User)
+        .join(Task, User.id == Task.assignedBy)
+        .join(UserTask, Task.id == UserTask.task_id)
+        .filter(UserTask.user_id == current_user.id)
+        .distinct()
+        .all()
+    )
+
+    users = User.query.all()  # Get all users for dropdown
+
+    # Generate the pie chart for the current user
     generate_progress_pie_chart(current_user.id)
 
-    return render_template('dashboard.html', tasks=user_tasks, user=current_user, users=users)
+    return render_template('dashboard.html', tasks=user_tasks, user=current_user, users=users, assigned_by_users=assigned_by_users, filters=filters)
 
 @app.route('/edit_task/<int:task_id>', methods=['GET', 'POST'])
 @login_required

@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Management Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   -->
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/dashboard.css') }}">
 
+    
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -80,8 +82,12 @@
     </div>        
     <div class="container mt-5">
         <h1 class="text-center mb-4">Task Management Dashboard</h1>
+        <!-- button for viewing reports -->
         <a class="btn btn-primary mb-3" href="{{ url_for('reports') }}">View Reports</a>
+        <!-- button for creating new task -->
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
+        <!-- button to select filters -->
+        <href class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterTaskModal">Filter By</href>
         <table class="table table-bordered table-striped">
             <!-- <caption>{{current_user.username}}'s Task List</caption> -->
             <thead class="table-dark">
@@ -306,6 +312,57 @@
             </div>
         </div>
     </div>
+
+    <!-- Filter Task Modal -->
+    <div id="filterTaskModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Filter Tasks</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="GET" action="{{ url_for('dashboard') }}">
+              <div class="modal-body">
+                <h6>Status</h6>
+                {% for status in ["Not Started", "In Progress", "Completed", "On Hold", "Cancelled"] %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="status" value="{{ status }}" id="status_{{ status }}" checked>
+                    <label class="form-check-label" for="status_{{ status }}">{{ status }}</label>
+                  </div>
+                {% endfor %}
+      
+                <h6>Priority</h6>
+                {% for priority in ["Low", "Medium", "High"] %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="priority" value="{{ priority }}" id="priority_{{ priority }}" checked>
+                    <label class="form-check-label" for="priority_{{ priority }}">{{ priority }}</label>
+                  </div>
+                {% endfor %}
+      
+                <h6>Category</h6>
+                {% for category in ["Work", "Personal", "Other"] %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="category" value="{{ category }}" id="category_{{ category }}" checked>
+                    <label class="form-check-label" for="category_{{ category }}">{{ category }}</label>
+                  </div>
+                {% endfor %}
+      
+                <h6>Assigned By</h6>
+                {% for user in assigned_by_users %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assignedBy" value="{{ user.id }}" id="assignedBy_{{ user.id }}" checked>
+                    <label class="form-check-label" for="assignedBy_{{ user.id }}">{{ user.username }}</label>
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

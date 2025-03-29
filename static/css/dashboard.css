@@ -9,9 +9,9 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
     height: 100vh;
-    color: #191716; 
+    color: #191716;
 }
 
 /* Flash messages */
@@ -43,40 +43,60 @@ body {
     background-color: #fff8f0;
     padding: 20px;
     border-radius: 10px;
+    margin-bottom: 30px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 90%;
 }
 
 /* Task Table */
 table {
     width: 100%;
     border-collapse: collapse;
+    max-width: 100%;
+    overflow: auto;
 }
 
+#table-container {
+    max-width: 100%;
+    overflow: auto;
+    width: 100%;
+}
+#filter-by {
+    margin-bottom: 1rem;
+}
+
+
 th {
-    background-color: #c7a17a; /* Dark tan */
+    background-color: #c7a17a;
+    /* Dark tan */
     color: #ffffff;
     padding: 10px;
     text-align: left;
 }
 
 td {
-    background-color: #e4c8a2; /* Medium tan */
+    background-color: #e4c8a2;
+    /* Medium tan */
     padding: 10px;
 }
 
 /* Priority Column Colors */
 td.priority-high {
-    background-color: #d9534f; /* Red */
+    background-color: #d9534f;
+    /* Red */
     color: white;
 }
 
 td.priority-medium {
-    background-color: #f0ad4e; /* Orange */
+    background-color: #f0ad4e;
+    /* Orange */
     color: white;
 }
 
 td.priority-low {
-    background-color: #5bc0de; /* Blue */
+    background-color: #5bc0de;
+    /* Blue */
     color: white;
 }
 
@@ -86,12 +106,14 @@ td.priority-low {
 .main-container {
     width: 90%;
     max-width: 800px;
-    background-color: rgba(255, 248, 240, 0.95); /* Light tan with slight transparency */
+    background-color: rgba(255, 248, 240, 0.95);
+    /* Light tan with slight transparency */
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
-    position: relative; /* Ensure child elements align properly */
+    position: relative;
+    /* Ensure child elements align properly */
 }
 
 /* Ensure body flexbox centers the content properly */
@@ -100,6 +122,8 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
 .logout-button {
@@ -108,9 +132,11 @@ body {
     right: 10px;
     background-color: #e8eae9;
 }
+
 .logout-button:hover {
     background-color: #c3c0c0;
 }
+
 /*-----------------------------------*/
 
 button {
@@ -122,12 +148,20 @@ button {
 }
 
 button.btn-primary {
-    background-color: #38673e;
+    background-color: #276128;
     color: white;
 }
 
 button.btn-primary:hover {
+    background-color: #38673e;
+}
+
+a.btn-primary {
     background-color: #276128;
+    color: white;
+}
+a.btn-primary:hover {
+    background-color: #38673e;
 }
 
 button.btn-danger {

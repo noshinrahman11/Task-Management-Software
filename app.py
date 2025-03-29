@@ -81,6 +81,25 @@ def logout():
     flash('You have been logged out successfully!', category='info')
     return redirect(url_for('index'))
 
+@app.route("/reports")
+@login_required
+def reports():
+    chart_html = generate_progress_pie_chart(current_user.id)
+    return render_template("reports.html", chart_html=chart_html)
+
+
+@app.route('/sync_calendar/<int:task_id>', methods=['POST'])
+@login_required
+def add_task_to_calendar_route(task_id):
+    task = Task.query.get(task_id)
+    if task:
+        add_task_to_calendar(task.name, task.description, task.dueDate)
+        flash('Task added to Google Calendar successfully!', category='success')
+    else:
+        flash('Task not found!', category='error')
+    return redirect(url_for('dashboard'))
+    
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
@@ -283,23 +302,9 @@ def delete_task(task_id):
     return redirect(url_for('dashboard'))
 
 
-@app.route("/reports")
-@login_required
-def reports():
-    chart_html = generate_progress_pie_chart(current_user.id)
-    return render_template("reports.html", chart_html=chart_html)
 
-@app.route('/sync_calendar/<int:task_id>', methods=['POST'])
-@login_required
-def add_task_to_calendar_route(task_id):
-    task = Task.query.get(task_id)
-    if task:
-        add_task_to_calendar(task.name, task.description, task.dueDate)
-        flash('Task added to Google Calendar successfully!', category='success')
-    else:
-        flash('Task not found!', category='error')
-    return redirect(url_for('dashboard'))
-    
+
+
 
 @app.errorhandler(401)
 def unauthorized(e):

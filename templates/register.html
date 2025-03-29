@@ -24,6 +24,7 @@
         function validateForm() {
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementByID('confirmPassword').value
             var username = document.getElementById('username').value;
             var firstName = document.getElementById('FirstName').value;
             var lastName = document.getElementById('LastName').value;
@@ -43,7 +44,7 @@
                 return false;
             }
 
-            if (confirmPssword != password) {
+            if (password != confirmPassword) {
                 alert('Passwords do not match')
                 return false;
             }
@@ -69,7 +70,7 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Requires at least a number, uppercase letter, and special char." required>
 
-            <label for="confirmPassword">Password:</label>
+            <label for="confirmPassword">Confirm Password:</label>
             <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Please re-enter password." required>
 
             <label for="FirstName">First Name:</label>

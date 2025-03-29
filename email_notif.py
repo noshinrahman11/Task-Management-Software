@@ -72,6 +72,24 @@ def send_role_notification(user, previous_role, recipient_email):
     """
     send_email(subject, [recipient_email], body)
 
+def send_registration_notification(user, recipient_email):
+    subject = f"Welcome to Task Management System!"
+    body = f"""
+    Hi {user.FirstName}! 
+    
+    Thanks for registering for Task Management System!
+    
+    See your registration info below. 
+
+    Username: {user.username}
+    Email: {user.email}
+    Role: {user.Role}
+
+    Sincerely,
+    Task Management System
+    """
+    send_email(subject, [recipient_email], body)
+
 def check_task_deadlines():
     """Check for tasks that are due in 24 hours and send email notifications."""
     print("Inside check_task_deadlines function...")

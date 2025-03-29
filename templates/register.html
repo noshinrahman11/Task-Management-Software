@@ -42,6 +42,12 @@
                 alert('Password must contain at least one number, one uppercase letter, and one special character.');
                 return false;
             }
+
+            if (confirmPssword != password) {
+                alert('Passwords do not match')
+                return false;
+            }
+            
             return true;
         }
     </script>
@@ -62,6 +68,9 @@
             
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Requires at least a number, uppercase letter, and special char." required>
+
+            <label for="confirmPassword">Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Please re-enter password." required>
 
             <label for="FirstName">First Name:</label>
             <input type="text" id="FirstName" name="FirstName" placeholder="Enter your first name" required>

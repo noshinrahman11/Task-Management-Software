@@ -7,7 +7,7 @@ from database import init_db, db_sessions
 from flask_session import Session
 import re
 from datetime import datetime
-from email_notif import send_task_notification, check_task_deadlines
+from email_notif import send_task_notification, send_role_notification, check_task_deadlines
 import time
 from reports import generate_progress_pie_chart
 import threading
@@ -98,6 +98,34 @@ def add_task_to_calendar_route(task_id):
     else:
         flash('Task not found!', category='error')
     return redirect(url_for('dashboard'))
+
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin():
+
+    # Show all users in the database
+    users = User.query.all()
+    
+    return render_template('admin.html', users=users)
+
+@app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
+def edit_user(user_id):
+    user = User.query.get(user_id)
+    if request.method == 'POST':
+        previous_role = user.Role
+        user.Role = request.form['Role']
+
+        db_sessions.commit()
+
+        print(f"User Role updated to from {previous_role} to {user.Role} successfully.")
+        flash('User updated successfully!', category='success')
+
+        # Send email notification if role is changed
+        if user and user.email:
+            if user.Role != previous_role:
+                send_role_notification(user, previous_role, user.email) 
+
+        return redirect(url_for('admin'))
     
 
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -145,14 +173,6 @@ def dashboard():
             send_task_notification(new_task, assigned_user.email) 
 
         return redirect(url_for('dashboard'))
-    
-    # user_tasks = (
-    #     db_sessions.query(Task, User.username.label("assigned_by_username"))
-    #     .join(UserTask, Task.id == UserTask.task_id)
-    #     .join(User, Task.assignedBy == User.id)
-    #     .filter(UserTask.user_id == current_user.id)
-    #     .all()
-    # )
 
     # Get all tasks assigned to the current user
     user_tasks = (
@@ -204,17 +224,6 @@ def dashboard():
 
     user_tasks = filter_query.all()
 
-    # Get unique users who assigned tasks to current_user
-    # assigned_by_users = (
-    #     db_sessions.query(User)
-    #     .filter(User.username.in_(
-    #         db_sessions.query(Task.assignedBy)
-    #         .join(UserTask, Task.id == UserTask.task_id)
-    #         .filter(UserTask.user_id == current_user.id)
-    #         .distinct()
-    #     ))
-    #     .all()
-    # )
     assigned_by_users = (
         db_sessions.query(User)
         .join(Task, User.username == Task.assignedBy)  # Join on username

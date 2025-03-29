@@ -81,6 +81,10 @@
     </div>        
     <div class="container mt-5">
         <h1 class="text-center mb-4">Task Management Dashboard</h1>
+        <!--Admin Dashboard button only shown if user is an admin-->
+        {% if user.Role == "Admin" %}
+            <a class="btn btn-primary mb-3" href="{{ url_for('admin') }}">Admin Dashboard</a>
+        {% endif %}
         <!-- button for viewing reports -->
         <a class="btn btn-primary mb-3" href="{{ url_for('reports') }}">View Reports</a>
         <!-- button for creating new task -->

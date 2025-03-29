@@ -62,9 +62,6 @@ table {
     overflow: auto;
     width: 100%;
 }
-#filter-by {
-    margin-bottom: 1rem;
-}
 
 
 th {
@@ -162,6 +159,14 @@ a.btn-primary {
 }
 a.btn-primary:hover {
     background-color: #38673e;
+}
+
+#filter-by {
+    margin-bottom: 1rem;
+}
+
+#back-to-dashboard {
+    margin-bottom: 1rem;
 }
 
 button.btn-danger {

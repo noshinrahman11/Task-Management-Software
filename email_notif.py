@@ -55,6 +55,23 @@ def send_task_deadline_notification(recipient_email, task):
     """
     send_email(subject, [recipient_email], body)
 
+def send_role_notification(user, previous_role, recipient_email):
+    subject = f"User Role Updated: {user.FirstName}'s role is now {user.Role}"
+    body = f"""
+    Hello,
+
+    Your role in the Task Management System has been updated.
+
+    Previous Role: {previous_role}
+    New Role: {user.Role}
+
+    Your permissions have been updated accordingly.
+
+    Sincerely,
+    Task Management System
+    """
+    send_email(subject, [recipient_email], body)
+
 def check_task_deadlines():
     """Check for tasks that are due in 24 hours and send email notifications."""
     print("Inside check_task_deadlines function...")

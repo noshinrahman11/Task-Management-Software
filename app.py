@@ -11,6 +11,7 @@ from email_notif import send_task_notification, check_task_deadlines
 import time
 from reports import generate_progress_pie_chart
 import threading
+from calendar_sync import add_task_to_calendar
 
 # Admin password = "@dminPassword1"
 # User# password = P@ssword#
@@ -72,11 +73,6 @@ def register():
             return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
     return render_template('register.html')
 
-@app.route("/reports")
-@login_required
-def reports():
-    chart_html = generate_progress_pie_chart(current_user.id)
-    return render_template("reports.html", chart_html=chart_html)
 
 @app.route('/logout')
 @login_required
@@ -285,6 +281,25 @@ def delete_task(task_id):
 
     flash('Task deleted successfully!', category='success')
     return redirect(url_for('dashboard'))
+
+
+@app.route("/reports")
+@login_required
+def reports():
+    chart_html = generate_progress_pie_chart(current_user.id)
+    return render_template("reports.html", chart_html=chart_html)
+
+@app.route('/sync_calendar/<int:task_id>', methods=['POST'])
+@login_required
+def add_task_to_calendar_route(task_id):
+    task = Task.query.get(task_id)
+    if task:
+        add_task_to_calendar(task.name, task.description, task.dueDate)
+        flash('Task added to Google Calendar successfully!', category='success')
+    else:
+        flash('Task not found!', category='error')
+    return redirect(url_for('dashboard'))
+    
 
 @app.errorhandler(401)
 def unauthorized(e):

@@ -122,8 +122,8 @@ def dashboard():
 
         # Send email notification
         assigned_user = User.query.get(assigned_user.id)  # Fetch user details
-        # if assigned_user and assigned_user.email:
-        #     send_task_notification(new_task, assigned_user.email) #### REMEMBER TO UNCOMMENT THIS LINE
+        if assigned_user and assigned_user.email:
+            send_task_notification(new_task, assigned_user.email) 
 
         return redirect(url_for('dashboard'))
     

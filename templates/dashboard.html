@@ -24,15 +24,20 @@
     <script>
         // Form validation, no empty fields, valid email, password requirements
         function validateForm() {
-            var email = document.getElementById('taskName').value;
-            var password = document.getElementById('description').value;
-            var username = document.getElementById('startDate').value;
-            var firstName = document.getElementById('dueDate').value;
-            var lastName = document.getElementById('category').value;
-            var birthDate = document.getElementById('status').value;
-            var birthDate = document.getElementById('priority').value;
+            var taskName = document.getElementById('taskName').value;
+            var description = document.getElementById('description').value;
+            var startDate = document.getElementById('startDate').value;
+            var dueDate = document.getElementById('dueDate').value;
+            var category = document.getElementById('category').value;
+            var status = document.getElementById('status').value;
+            var priority = document.getElementById('priority').value;
             var assignedTo = document.getElementById('assignedTo').value;
             
+            if (dueDate < startDate) {
+                alert('Due date must be after start date.')
+                return false; // Due date is not after start date
+            }
+
             return true;
         }
 
@@ -96,6 +101,7 @@
                 <!-- <caption>{{current_user.username}}'s Task List</caption> -->
                 <thead class="table-dark">
                     <tr>
+                        <th> </th>
                         <th>Task Name</th>
                         <th>Description</th>
                         <th>Start Date</th>
@@ -105,13 +111,22 @@
                         <th>Priority</th>
                         <!-- <th>Assigned To</th> -->
                         <th>Assigned By</th>
-                        <th> </th>
                     </tr>
                 </thead>
                 <tbody id="taskTableBody" method="GET" action="/dashboard">
                     <!-- Rows will be dynamically populated here -->
                     {% for task in tasks %}
                     <tr class="priority-{{ task.priority|lower }}">
+                        <td>
+                            <!-- Edit Task Modal Trigger -->
+                            <button class="btn btn-warning btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#editTaskModal{{ task.id }}">
+                                Edit
+                            </button>
+                            <!-- Delete Button -->
+                            <button class="btn btn-danger btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">Delete</button>
+                            <!-- Sync to Calendar -->
+                            <button id="sync-btn" class="btn btn-secondary btn-sm" class="td-btns" onclick="window.location.href = '/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
+                        </td>
                         <td>{{ task.name }}</td>
                         <td>{{ task.description }}</td>
                         <td>{{ task.startDate }}</td>
@@ -122,16 +137,6 @@
                         <!-- <td>{{ task.assignedTo }}</td> -->
                          <td>{{ task.assignedBy }}</td>
                         <!-- <td>{{ task.assigned_by_username }}</td> -->
-                        <td>
-                            <!-- Edit Task Modal Trigger -->
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal{{ task.id }}">
-                                Edit
-                            </button>
-                            <!-- Delete Button -->
-                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">Delete</button>
-                            <!-- Sync to Calendar -->
-                            <button class="btn btn-secondary btn-sm" onclick="window.location.href = '/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
-                        </td>
                     </tr>
     
                     <!-- Edit Task Modal -->
@@ -300,9 +305,14 @@
                             <select class="form-control" id="assignedTo" name="assignedTo" required>
                                 {% if current_user.Role == 'Admin' %}
                                     {% for user in users %}
-                                        <option value="{{ user.id }}">{{ user.username }}</option>
+                                        {% if user == current_user %}
+                                            <option value="{{ user.id }}" selected>{{ user.username }}</option>
+                                        {% else %}
+                                            <option value="{{ user.id }}">{{ user.username }}</option>
+                                        {% endif %}
                                     {% endfor %}
                                 {% elif current_user.Role == 'Manager' %}
+                                    <option value="{{ current_user.id }}" selected>{{ current_user.username }}</option>
                                     {% for user in users %}
                                         {% if user.Role == 'Staff' %}
                                             <option value="{{ user.id }}">{{ user.username }}</option>
@@ -333,7 +343,7 @@
                 <h6>Status</h6>
                 {% for status in ["Not Started", "In Progress", "Completed", "On Hold", "Cancelled"] %}
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="status" value="{{ status }}" id="status_{{ status }}" checked>
+                    <input class="form-check-input" type="checkbox" name="status" value="{{ status }}" id="status_{{ status }}">
                     <label class="form-check-label" for="status_{{ status }}">{{ status }}</label>
                   </div>
                 {% endfor %}
@@ -341,7 +351,7 @@
                 <h6>Priority</h6>
                 {% for priority in ["Low", "Medium", "High"] %}
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="priority" value="{{ priority }}" id="priority_{{ priority }}" checked>
+                    <input class="form-check-input" type="checkbox" name="priority" value="{{ priority }}" id="priority_{{ priority }}">
                     <label class="form-check-label" for="priority_{{ priority }}">{{ priority }}</label>
                   </div>
                 {% endfor %}
@@ -349,7 +359,7 @@
                 <h6>Category</h6>
                 {% for category in ["Work", "Personal", "Other"] %}
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="category" value="{{ category }}" id="category_{{ category }}" checked>
+                    <input class="form-check-input" type="checkbox" name="category" value="{{ category }}" id="category_{{ category }}">
                     <label class="form-check-label" for="category_{{ category }}">{{ category }}</label>
                   </div>
                 {% endfor %}
@@ -357,8 +367,8 @@
                 <h6>Assigned By</h6>
                 {% for user in assigned_by_users %}
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="assignedBy" value="{{ user.id }}" id="assignedBy_{{ user.id }}" checked>
-                    <label class="form-check-label" for="assignedBy_{{ user.id }}">{{ user.username }}</label>
+                    <input class="form-check-input" type="checkbox" name="assignedBy" value="{{ user.username }}" id="assignedBy_{{ user.username }}">
+                    <label class="form-check-label" for="assignedBy_{{ user.username }}">{{ user.username }}</label>
                   </div>
                 {% endfor %}
               </div>

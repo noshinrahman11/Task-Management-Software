@@ -7,7 +7,7 @@ from database import init_db, db_sessions
 from flask_session import Session
 import re
 from datetime import datetime
-from email_notif import send_task_notification, send_role_notification, check_task_deadlines
+from email_notif import send_task_notification, send_role_notification, send_registration_notification, check_task_deadlines
 import time
 from reports import generate_progress_pie_chart
 import threading
@@ -70,6 +70,10 @@ def register():
             db_sessions.commit()
             login_user(new_user)  # Log in the new user automatically
             flash('Registration successful! Welcome!', category='success')
+            # Send email for new sign-in
+            send_registration_notification(new_user, new_user.email)
+            print('Registration email sent')
+            
             return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
     return render_template('register.html')
 

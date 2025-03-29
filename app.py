@@ -190,14 +190,25 @@ def dashboard():
     user_tasks = filter_query.all()
 
     # Get unique users who assigned tasks to current_user
+    # assigned_by_users = (
+    #     db_sessions.query(User)
+    #     .filter(User.username.in_(
+    #         db_sessions.query(Task.assignedBy)
+    #         .join(UserTask, Task.id == UserTask.task_id)
+    #         .filter(UserTask.user_id == current_user.id)
+    #         .distinct()
+    #     ))
+    #     .all()
+    # )
     assigned_by_users = (
         db_sessions.query(User)
-        .join(Task, User.id == Task.assignedBy)
+        .join(Task, User.username == Task.assignedBy)  # Join on username
         .join(UserTask, Task.id == UserTask.task_id)
         .filter(UserTask.user_id == current_user.id)
         .distinct()
         .all()
     )
+    print("Assigned By Users:", [user.username for user in assigned_by_users])
 
     users = User.query.all()  # Get all users for dropdown
 

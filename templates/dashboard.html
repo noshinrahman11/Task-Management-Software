@@ -83,11 +83,11 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Task Management Dashboard</h1>
         <!-- button for viewing reports -->
-        <a class="btn btn-primary mb-3" href="{{ url_for('reports') }}">View Reports</a>
+        <button class="btn btn-primary mb-3" href="{{ url_for('reports') }}">View Reports</button>
         <!-- button for creating new task -->
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
         <!-- button to select filters -->
-        <href class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterTaskModal">Filter By</href>
+        <a class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterTaskModal">Filter By</a>
         <table class="table table-bordered table-striped">
             <!-- <caption>{{current_user.username}}'s Task List</caption> -->
             <thead class="table-dark">

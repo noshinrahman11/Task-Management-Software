@@ -63,19 +63,32 @@ table {
     width: 100%;
 }
 
-
+table {
+    border: 1px solid black;
+    table-layout: fixed;
+    width: 200px;
+  }
+  
 th {
     background-color: #c7a17a;
     /* Dark tan */
     color: #ffffff;
     padding: 10px;
-    text-align: left;
+    text-align: center;
+    width: 100px;
+    overflow: auto;
 }
 
 td {
     background-color: #e4c8a2;
     /* Medium tan */
     padding: 10px;
+    width: 100px;
+    overflow: auto;
+}
+
+.td-btns {
+    text-align: center;
 }
 
 /* Priority Column Colors */
@@ -159,6 +172,14 @@ a.btn-primary {
 }
 a.btn-primary:hover {
     background-color: #38673e;
+}
+
+#sync-btn {
+    background-color: #276128;
+    color: white;
+}
+#sync-btn:hover {
+    background-color: #38673e
 }
 
 #filter-by {

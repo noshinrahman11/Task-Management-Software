@@ -3,7 +3,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 
-# Define the SQLite database URL
+# # Check if running in test mode
+# IS_TESTING = os.getenv('TESTING', 'False') == 'True'
+
+# # Define the SQLite database URL, testing uses memory
+# if IS_TESTING: 
+#     url = "sqlite:///:memory:"  
+# else:
+
 url = 'sqlite:///' + os.path.join(os.path.dirname(__file__), './database.db')
 
 # Create the database engine
@@ -20,3 +27,7 @@ Base.query = db_sessions.query_property()
 def init_db():
     import models  # Import models to register them with SQLAlchemy
     Base.metadata.create_all(bind=engine)
+
+# # Clean up the database (used for testing)
+# def drop_db():
+#     Base.metadata.drop_all(bind=engine)

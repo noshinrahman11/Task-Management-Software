@@ -8,6 +8,11 @@ from flask_mail import Mail
 mail = Mail() # Initialize Flask-Mail
 login_manager = LoginManager()
 
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"  # Use an in-memory test database
+    WTF_CSRF_ENABLED = False  # Disable CSRF for testing forms
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -30,7 +35,4 @@ def create_app(config_class=Config):
 
 
 
-# class TestingConfig(Config):
-#     TESTING = True
-#     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"  # Use an in-memory test database
-#     WTF_CSRF_ENABLED = False  # Disable CSRF for testing forms
+

@@ -27,3 +27,10 @@ def create_app(config_class=Config):
     
     login_manager.user_loader(load_user)
     return app
+
+
+
+# class TestingConfig(Config):
+#     TESTING = True
+#     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"  # Use an in-memory test database
+#     WTF_CSRF_ENABLED = False  # Disable CSRF for testing forms

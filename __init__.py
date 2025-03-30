@@ -18,6 +18,8 @@ def create_app(config_class=Config):
     app.config.from_object(Config)
     app.config.update(SECRET_KEY=os.urandom(24))
 
+    
+
     # Configure Flask-Mail
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
@@ -31,6 +33,14 @@ def create_app(config_class=Config):
     mail.init_app(app)
     
     login_manager.user_loader(load_user)
+
+    def print_routes():
+        print("Registered Routes:")
+        for rule in app.url_map.iter_rules():
+            print(f"Endpoint: {rule.endpoint}, URL: {rule.rule}")
+    
+    app.before_request(print_routes)
+
     return app
 
 

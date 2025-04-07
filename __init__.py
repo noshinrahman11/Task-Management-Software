@@ -39,7 +39,8 @@ def create_app(config_class=Config):
         for rule in app.url_map.iter_rules():
             print(f"Endpoint: {rule.endpoint}, URL: {rule.rule}")
     
-    app.before_request(print_routes)
+    # Uncomment the following line to print routes on every request (for debugging)
+    # app.before_request(print_routes) 
 
     return app
 

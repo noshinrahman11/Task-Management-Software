@@ -30,6 +30,7 @@ def authenticate_google_calendar():
 def add_task_to_calendar(task_title, task_description, task_due_date):
     """Add a task to Google Calendar."""
     service = authenticate_google_calendar()
+    print("Authenticated to Google Calendar")
 
     # Create an event
     event = {

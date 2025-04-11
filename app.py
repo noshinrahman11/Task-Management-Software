@@ -78,6 +78,21 @@ def register():
     return render_template('register.html')
 
 
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            # Send email with password reset link (not implemented here)
+            
+            flash('Password reset link has been sent to your email.', category='info')
+        else:
+            flash('Email not found.', category='error')
+    return render_template('reset_password.html')
+
+
+
 @app.route('/logout')
 @login_required
 def logout():

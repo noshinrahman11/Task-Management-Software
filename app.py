@@ -78,6 +78,21 @@ def register():
     return render_template('register.html')
 
 
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            # Send email with password reset link (not implemented here)
+            
+            flash('Password reset link has been sent to your email.', category='info')
+        else:
+            flash('Email not found.', category='error')
+    return render_template('reset_password.html')
+
+
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -353,6 +368,7 @@ if __name__ == "__main__":
     print("Background thread started!")
 
     print ("Starting Flask app...")
+<<<<<<< HEAD
     app.run(host='0.0.0.0', port=5000, debug=True)
     # FlaskUI(app=app,
     #         server="flask",
@@ -361,6 +377,14 @@ if __name__ == "__main__":
     #         width=800,
     #         height=600,
     #         ).run()
+=======
+    # app.run(host='0.0.0.0', port=80, debug=True)
+    FlaskUI(app=app,
+            server="flask",
+            width=800,
+            height=600,
+            ).run()
+>>>>>>> c8b6aca0d387687c3b950bed2b4b8007ad080b23
 
     # while True:
     #     time.sleep(1)

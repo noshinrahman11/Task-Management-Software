@@ -368,23 +368,12 @@ if __name__ == "__main__":
     print("Background thread started!")
 
     print ("Starting Flask app...")
-<<<<<<< HEAD
-    app.run(host='0.0.0.0', port=5000, debug=True)
-    # FlaskUI(app=app,
-    #         server="flask",
-    #         host='0.0.0.0',
-    #         port=80,
-    #         width=800,
-    #         height=600,
-    #         ).run()
-=======
     # app.run(host='0.0.0.0', port=80, debug=True)
     FlaskUI(app=app,
             server="flask",
             width=800,
             height=600,
             ).run()
->>>>>>> c8b6aca0d387687c3b950bed2b4b8007ad080b23
 
     # while True:
     #     time.sleep(1)

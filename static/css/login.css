@@ -67,6 +67,11 @@ label {
     display: block;
     margin-bottom: 10px;
 }
+p {
+    color: #666;
+    margin-top: 10px;
+    display: block;
+}
 input[type="text"],
 input[type="password"] {
     width: 100%;

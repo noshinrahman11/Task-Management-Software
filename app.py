@@ -100,15 +100,23 @@ def reset_password(email):
     if request.method == 'POST':
         print(f"Resetting password for email: {email}")
         password_hash = request.form['password']
+        confirmPassword = request.form['confirmPassword']
         user = User.query.filter_by(email=email).first()
         if user:
-            if user.check_password(password_hash):
+            if password_hash != confirmPassword:
+                flash('Passwords do not match.', category='error')
+                return redirect(url_for('reset_password', email=email))
+            elif user.check_password(password_hash):
                 flash('New password cannot be the same as the old password.', category='error')
                 return redirect(url_for('reset_password', email=email))
-            user.set_password(password_hash)
-            db_sessions.commit()
-            flash('Password reset successfully!', category='success')
-            return redirect(url_for('login'))
+            elif not re.match(r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)', password_hash):
+                flash('Password must contain at least one number, one uppercase letter, and one special character.', category='error')
+                return redirect(url_for('reset_password', email=email))
+            else:
+                user.set_password(password_hash)
+                db_sessions.commit()
+                flash('Password reset successfully!', category='success')
+                return redirect(url_for('login'))
         else:
             flash('User not found.', category='error')
     return render_template('reset-password.html', email=email)

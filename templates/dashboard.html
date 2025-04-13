@@ -86,7 +86,7 @@
 <body>
     
     <div class="logout-button">
-        <a href="/logout">
+        <a href="/auth/logout">
             <button type="button">Logout</button>
         </a>
     </div>        
@@ -94,16 +94,14 @@
         <h1 class="text-center mb-4">Task Management Dashboard</h1>
         <!--Admin Dashboard button only shown if user is an admin-->
         {% if user.Role == "Admin" %}
-            <a class="btn btn-primary mb-3" href="{{ url_for('admin') }}">Admin Dashboard</a>
+            <a class="btn btn-primary mb-3" href="{{ url_for('admin.admin') }}">Admin Dashboard</a>
         {% endif %}
         <!-- button for viewing reports -->
-        <a class="btn btn-primary mb-3" href="{{ url_for('reports') }}">View Reports</a>
+        <a class="btn btn-primary mb-3" href="{{ url_for('features.reports') }}">View Reports</a>
         <!-- button for creating new task -->
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
         <!-- button to select filters -->
         <a id="filter-by" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterTaskModal">Filter By</a>
-        
-        <button onclick="test()">Click Me</button>
 
         <div id="table-container">
             <table class="table table-bordered table-striped">
@@ -122,7 +120,7 @@
                         <th>Assigned By</th>
                     </tr>
                 </thead>
-                <tbody id="taskTableBody" method="GET" action="/dashboard">
+                <tbody id="taskTableBody" method="GET" action="/task/dashboard">
                     <!-- Rows will be dynamically populated here -->
                     {% for task in tasks %}
                     <tr class="priority-{{ task.priority|lower }}">
@@ -134,7 +132,7 @@
                             <!-- Delete Button -->
                             <button class="btn btn-danger btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">Delete</button>
                             <!-- Sync to Calendar -->
-                            <button id="sync-btn" class="btn btn-secondary btn-sm" class="td-btns" onclick="window.location.href = '/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
+                            <button id="sync-btn" class="btn btn-secondary btn-sm" class="td-btns" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
                         </td>
                         <td>{{ task.name }}</td>
                         <td>{{ task.description }}</td>
@@ -157,7 +155,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ url_for('edit_task', task_id=task.id) }}" method="POST">
+                                    <form action="{{ url_for('task.edit_task', task_id=task.id) }}" method="POST">
                                         <div class="mb-3">
                                             <label for="taskName" class="form-label">Task Name</label>
                                             <input type="text" class="form-control" name="taskName" value="{{ task.name }}" required>
@@ -240,7 +238,7 @@
                                     <p class="text-danger">Are you sure you want to delete this task?</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ url_for('task.delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                     </form>
     
@@ -265,7 +263,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addTaskForm" action=/dashboard method="POST" onsubmit="return validateForm()">
+                    <form id="addTaskForm" action=/task/dashboard method="POST" onsubmit="return validateForm()">
                         <!-- NLP Smart Input Field START -->
                         <div class="mb-3">
                             <label for="nlpInput" class="form-label">Smart Task Entry (NLP)</label>
@@ -356,7 +354,7 @@
               <h5 class="modal-title">Filter Tasks</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="GET" action="{{ url_for('dashboard') }}">
+            <form method="GET" action="{{ url_for('task.dashboard') }}">
               <div class="modal-body">
                 <h6>Status</h6>
                 {% for status in ["Not Started", "In Progress", "Completed", "On Hold", "Cancelled"] %}
@@ -403,17 +401,6 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/chrono-node@2.3.1/dist/chrono.min.js"></script> -->
     <!-- <script src="https://unpkg.com/chrono-node@2.3.4/dist/chrono.min.js"></script> -->
     
-    
-    <script>
-        alert("JavaScript is running!");
-    </script>
-    
-    <script>
-        function test() {
-            console.log("Test clicked!");
-        }
-    </script>
-
         
     <script>
         function processNLPInput() {

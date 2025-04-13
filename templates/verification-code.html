@@ -27,7 +27,7 @@
         <h1>Reset Password:</h1>
 
         <!-- Form to enter verification code -->
-        <form method="post" action="{{ url_for('verify_code') }}">
+        <form method="post" action="{{ url_for('auth.verify_code') }}">
             <div class="form-group">
                 <label for="verification_code">Verification Code:</label>
                 <input type="text" id="verification_code" name="verification_code" placeholder="Enter the verification code that was sent to your email:" required>
@@ -35,7 +35,7 @@
             <button type="submit">Verify</button>
             <br><br>
             <!-- Switch to Login Button -->
-            <button class="switch-register-login" onclick="window.location.href = '/login';">Return to Login</button> 
+            <button class="switch-register-login" onclick="window.location.href = '/auth/login';">Return to Login</button> 
 
             <!-- <button data-bs-toggle="modal" data-bs-target="#verifCodeModal">Send Verification Code</button> -->
         </form>

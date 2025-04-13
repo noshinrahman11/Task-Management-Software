@@ -4,6 +4,12 @@ from __init__ import mail
 from datetime import datetime, timedelta
 from models import Task, User
 
+# Admin password = "@dminPassword1"
+# User# password = P@ssword#
+
+# email = 'taskmanagementsystemcs264@gmail.com'
+# password = taskGroup7
+
 
 # In powershell:
 # $env:MAIL_USERNAME="taskmanagementsystemcs264@gmail.com"

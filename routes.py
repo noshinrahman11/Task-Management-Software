@@ -25,7 +25,7 @@ def create_task():
     except Exception as e:
         flash(f'Error adding task to Google Calendar: {e}', 'danger')
 
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.index'))
 
 @routes.route('/sync_to_calendar', methods=['POST'])
 def sync_to_calendar():
@@ -45,4 +45,4 @@ def sync_to_calendar():
         flash(f'Error syncing task to Google Calendar: {e}', 'danger')
 
     # Redirect to the task list or another page
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.index'))

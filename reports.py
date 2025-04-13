@@ -54,7 +54,7 @@ def fetch_task_data(user_id):
 def generate_progress_pie_chart(user_id):
     task_data = fetch_task_data(user_id)
 
-    labels = [row[0] for row in task_data]  # Task statuses ###FIX: Change to 'status' instead of 'category'
+    labels = [row[0] for row in task_data]  # Task statuses 
     values = [row[1] for row in task_data]  # Task count per category
 
     fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.4)])

@@ -17,11 +17,13 @@ with app.app_context():
 
 @app.errorhandler(401)
 def unauthorized(e):
-    return render_template("login.html")
+    print("401 error")
+    return render_template("404.html")
     
 @app.errorhandler(404)
 def not_found(e):
-    return redirect(url_for('auth.login'))
+    print("404 error")
+    return redirect(url_for('404.html'))
 
 if __name__ == "__main__":
     # app.run(host='localhost', port=5000, debug=True)

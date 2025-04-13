@@ -17,10 +17,12 @@ with app.app_context():
 
 @app.errorhandler(401)
 def unauthorized(e):
+    print("401 error")
     return render_template("404.html")
     
 @app.errorhandler(404)
 def not_found(e):
+    print("404 error")
     return redirect(url_for('404.html'))
 
 if __name__ == "__main__":

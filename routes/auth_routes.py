@@ -23,7 +23,7 @@ def login():
         user = User.query.filter((User.username == username) | (User.email == username)).first()
         if user and user.check_password(password_hash): 
             login_user(user)
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('task.dashboard'))
         else:
             flash('Invalid username or password', category='error')
 
@@ -134,7 +134,7 @@ def register():
             send_registration_notification(new_user, new_user.email)
             print('Registration email sent')
             
-            return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
+            return redirect(url_for('task.dashboard'))  # Redirect to user's dashboard after signup
     return render_template('register.html')
 
 @auth_bp.route('/auth/logout')

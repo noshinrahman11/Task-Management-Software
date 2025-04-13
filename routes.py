@@ -26,3 +26,23 @@ def create_task():
         flash(f'Error adding task to Google Calendar: {e}', 'danger')
 
     return redirect(url_for('index'))
+
+@routes.route('/sync_to_calendar', methods=['POST'])
+def sync_to_calendar():
+    # Get task details from the form or database
+    task_title = request.form['title']
+    task_description = request.form['description']
+    task_due_date = request.form['due_date']  # Format: YYYY-MM-DDTHH:MM:SS
+
+    # Convert due_date to a datetime object
+    task_due_date = datetime.fromisoformat(task_due_date)
+
+    # Add task to Google Calendar
+    try:
+        add_task_to_calendar(task_title, task_description, task_due_date)
+        flash('Task successfully synced to Google Calendar!', 'success')
+    except Exception as e:
+        flash(f'Error syncing task to Google Calendar: {e}', 'danger')
+
+    # Redirect to the task list or another page
+    return redirect(url_for('index'))

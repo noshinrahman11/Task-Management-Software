@@ -97,7 +97,7 @@
             <a class="btn btn-primary mb-3" href="{{ url_for('admin.admin') }}">Admin Dashboard</a>
         {% endif %}
         <!-- button for viewing reports -->
-        <a class="btn btn-primary mb-3" href="{{ url_for('reports') }}">View Reports</a>
+        <a class="btn btn-primary mb-3" href="{{ url_for('features.reports') }}">View Reports</a>
         <!-- button for creating new task -->
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
         <!-- button to select filters -->
@@ -132,7 +132,7 @@
                             <!-- Delete Button -->
                             <button class="btn btn-danger btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">Delete</button>
                             <!-- Sync to Calendar -->
-                            <button id="sync-btn" class="btn btn-secondary btn-sm" class="td-btns" onclick="window.location.href = '/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
+                            <button id="sync-btn" class="btn btn-secondary btn-sm" class="td-btns" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
                         </td>
                         <td>{{ task.name }}</td>
                         <td>{{ task.description }}</td>

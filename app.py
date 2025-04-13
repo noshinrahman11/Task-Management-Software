@@ -1,18 +1,12 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, session
-from flask_login import login_required, login_user, logout_user, current_user
 from flaskwebgui import FlaskUI
 from __init__ import create_app
-from models import User, Task, UserTask, Project, UserProject, ProjectTask 
 from database import init_db, db_sessions
 from flask_session import Session
-import re
 from datetime import datetime
-from email_notif import send_task_notification, send_role_notification, send_registration_notification, check_task_deadlines, send_password_reset_notification
+from email_notif import check_task_deadlines
 import time
-import random
-from reports import generate_progress_pie_chart
 import threading
-from calendar_sync import add_task_to_calendar
 from routes.__init__ import register_routes
 
 app = create_app()
@@ -20,6 +14,48 @@ with app.app_context():
     init_db()
     register_routes(app)
 
+
+@app.errorhandler(401)
+def unauthorized(e):
+    return render_template("login.html")
+    
+@app.errorhandler(404)
+def not_found(e):
+    return redirect(url_for('auth.login'))
+
+if __name__ == "__main__":
+    # app.run(host='localhost', port=5000, debug=True)
+    
+    # def run_flask():
+    #     print ("Starting Flask app...")
+    #     FlaskUI(app=app,
+    #         server="flask",
+    #         width=800,
+    #         height=600,
+    #         ).run()
+    #     flask_thread = threading.Thread(target=run_flask, name="Thread-f", daemon=True)  # Start the thread
+    #     flask_thread.start()
+    
+    def run_deadline_checker():
+        print ("Starting background thread for checking deadlines...")
+        with app.app_context():
+            while True:
+                check_task_deadlines()  # Run the function
+                print("Checking task deadlines...")
+                time.sleep(3600)  # Wait for 1 hour before checking again
+        
+    deadline_thread = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
+    deadline_thread.start()
+    print("Background thread started!")
+
+    print ("Starting Flask app...")
+    # app.run(host='0.0.0.0', port=80, debug=True)
+    FlaskUI(app=app,
+            server="flask",
+            width=800,
+            height=600,
+            ).run()
+    
 
 
 # @app.route('/')
@@ -158,23 +194,23 @@ with app.app_context():
 #     flash('You have been logged out successfully!', category='info')
 #     return redirect(url_for('index'))
 
-@app.route("/reports")
-@login_required
-def reports():
-    chart_html = generate_progress_pie_chart(current_user.id)
-    return render_template("reports.html", chart_html=chart_html)
+# @app.route("/reports")
+# @login_required
+# def reports():
+#     chart_html = generate_progress_pie_chart(current_user.id)
+#     return render_template("reports.html", chart_html=chart_html)
 
 
-@app.route('/sync_calendar/<int:task_id>', methods=['POST'])
-@login_required
-def add_task_to_calendar_route(task_id):
-    task = Task.query.get(task_id)
-    if task:
-        add_task_to_calendar(task.name, task.description, task.dueDate)
-        flash('Task added to Google Calendar successfully!', category='success')
-    else:
-        flash('Task not found!', category='error')
-    return redirect(url_for('dashboard'))
+# @app.route('/sync_calendar/<int:task_id>', methods=['POST'])
+# @login_required
+# def add_task_to_calendar_route(task_id):
+#     task = Task.query.get(task_id)
+#     if task:
+#         add_task_to_calendar(task.name, task.description, task.dueDate)
+#         flash('Task added to Google Calendar successfully!', category='success')
+#     else:
+#         flash('Task not found!', category='error')
+#     return redirect(url_for('dashboard'))
 
 # @app.route('/admin', methods=['GET', 'POST'])
 # @login_required
@@ -379,49 +415,4 @@ def add_task_to_calendar_route(task_id):
 
 #     flash('Task deleted successfully!', category='success')
 #     return redirect(url_for('dashboard'))
-
-
-@app.errorhandler(401)
-def unauthorized(e):
-    return render_template("login.html")
-    
-@app.errorhandler(404)
-def not_found(e):
-    return redirect(url_for('auth.login'))
-
-if __name__ == "__main__":
-    # app.run(host='localhost', port=5000, debug=True)
-    
-    # def run_flask():
-    #     print ("Starting Flask app...")
-    #     FlaskUI(app=app,
-    #         server="flask",
-    #         width=800,
-    #         height=600,
-    #         ).run()
-    #     flask_thread = threading.Thread(target=run_flask, name="Thread-f", daemon=True)  # Start the thread
-    #     flask_thread.start()
-    
-    def run_deadline_checker():
-        print ("Starting background thread for checking deadlines...")
-        with app.app_context():
-            while True:
-                check_task_deadlines()  # Run the function
-                print("Checking task deadlines...")
-                time.sleep(3600)  # Wait for 1 hour before checking again
-        
-    deadline_thread = threading.Thread(target=run_deadline_checker, name="Thread-d", daemon=True)  # Start the thread
-    deadline_thread.start()
-    print("Background thread started!")
-
-    print ("Starting Flask app...")
-    # app.run(host='0.0.0.0', port=80, debug=True)
-    FlaskUI(app=app,
-            server="flask",
-            width=800,
-            height=600,
-            ).run()
-
-    # while True:
-    #     time.sleep(1)
 

@@ -86,7 +86,7 @@
 <body>
     
     <div class="logout-button">
-        <a href="/logout">
+        <a href="/auth/logout">
             <button type="button">Logout</button>
         </a>
     </div>        
@@ -102,8 +102,6 @@
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
         <!-- button to select filters -->
         <a id="filter-by" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterTaskModal">Filter By</a>
-        
-        <button onclick="test()">Click Me</button>
 
         <div id="table-container">
             <table class="table table-bordered table-striped">
@@ -403,17 +401,6 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/chrono-node@2.3.1/dist/chrono.min.js"></script> -->
     <!-- <script src="https://unpkg.com/chrono-node@2.3.4/dist/chrono.min.js"></script> -->
     
-    
-    <script>
-        alert("JavaScript is running!");
-    </script>
-    
-    <script>
-        function test() {
-            console.log("Test clicked!");
-        }
-    </script>
-
         
     <script>
         function processNLPInput() {

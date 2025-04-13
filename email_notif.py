@@ -24,7 +24,7 @@ def send_task_notification(task, recipient_email):
     body = f"""
     Hello,
 
-    You have been assigned a new task
+    You have been assigned a new task.
 
     Task: {task.name}
     Description: {task.description}
@@ -84,6 +84,22 @@ def send_registration_notification(user, recipient_email):
     Username: {user.username}
     Email: {user.email}
     Role: {user.Role}
+
+    Sincerely,
+    Task Management System
+    """
+    send_email(subject, [recipient_email], body)
+
+def send_password_reset_notification(user, recipient_email, password_reset_code):
+    subject = f"Password Reset Request"
+    body = f"""
+    Hello {user.FirstName},
+
+    A password reset request has been made for the following account:
+
+    To reset your password, please enter the following code: {password_reset_code}
+
+    If you did not request this, please ignore this email.
 
     Sincerely,
     Task Management System

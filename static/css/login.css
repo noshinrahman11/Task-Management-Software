@@ -55,6 +55,10 @@ h1 {
     color: #333;
     margin-bottom: 20px;
 }
+h5 {
+    color: #333;
+    margin-bottom: 20px;
+}
 form {
     margin-top: 20px;
 }
@@ -62,6 +66,11 @@ label {
     color: #666;
     display: block;
     margin-bottom: 10px;
+}
+p {
+    color: #666;
+    margin-top: 10px;
+    display: block;
 }
 input[type="text"],
 input[type="password"] {
@@ -85,4 +94,20 @@ button {
 }
 button:hover {
     background-color: #555;
+}
+
+.reset-password {
+    margin-top: 20px;
+    color: blue;
+    text-decoration: underline;
+}
+
+
+.btn-primary {
+    background-color: #276128;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #38673e;
 }

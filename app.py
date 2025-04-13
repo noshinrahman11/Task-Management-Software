@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, flash
+from flask import Flask, render_template, url_for, redirect, request, flash, session
 from flask_login import login_required, login_user, logout_user, current_user
 from flaskwebgui import FlaskUI
 from __init__ import create_app
@@ -7,8 +7,9 @@ from database import init_db, db_sessions
 from flask_session import Session
 import re
 from datetime import datetime
-from email_notif import send_task_notification, send_role_notification, send_registration_notification, check_task_deadlines
+from email_notif import send_task_notification, send_role_notification, send_registration_notification, check_task_deadlines, send_password_reset_notification
 import time
+import random
 from reports import generate_progress_pie_chart
 import threading
 from calendar_sync import add_task_to_calendar
@@ -28,7 +29,6 @@ with app.app_context():
 def index():
     return render_template("index.html")
 
-#do hashing in post section and login in get section
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -41,8 +41,87 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password', category='error')
+
     return render_template('login.html')
-    
+
+@app.route('/verification_code', methods=['GET', 'POST'])
+def verification_code():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            # Send email with password reset code
+            verification_code = random.randint(100000, 999999)  # Generate a random 6-digit code
+            session['reset_email'] = email
+            session['verification_code'] = str(verification_code) # Store the code as a string in the session
+            print(f"Password reset code: {verification_code}")
+            send_password_reset_notification(user, email, verification_code)
+            flash('Password reset code has been sent to your email.', category='info')
+            return redirect(url_for('verify_code'))
+        else:
+            flash('Email not found.', category='error')
+            return redirect(url_for('login'))
+
+        # if request.form['verification_code'] == str(password_reset_code):
+        #     # Code is correct, allow user to reset password
+        #     return redirect(url_for('reset_password', email=email))
+        # else:
+        #     flash('Invalid verification code.', category='error')
+        #     return redirect(url_for('verification_code'))
+
+    return redirect(url_for('login'))
+
+@app.route('/verify_code', methods=['GET', 'POST'])
+def verify_code():
+    if request.method == 'POST':
+        print("Verifying code...")
+        user_code = str(request.form.get('verification_code')).strip()
+        actual_code = str(session.get('verification_code')).strip()
+        email = session.get('reset_email')
+        print(f"User code: {user_code}, Actual code: {actual_code}, Email: {email}")
+
+        if not actual_code or not email:
+            flash('Session expired. Please try again.', 'error')
+            return redirect(url_for('login'))
+
+        if user_code == actual_code:
+            print(f"Given verification code matches the actual code: {actual_code}")
+            session.pop('verification_code', None) # Clear the verification code from the session
+            return redirect(url_for('reset_password', email=email))
+        else:
+            flash('Invalid verification code.', 'error')
+            return redirect(url_for('verify_code'))
+
+    return render_template('verification-code.html')  
+
+
+@app.route('/reset_password/<email>', methods=['GET', 'POST'])
+def reset_password(email):
+    if request.method == 'POST':
+        print(f"Resetting password for email: {email}")
+        password_hash = request.form['password']
+        confirmPassword = request.form['confirmPassword']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if password_hash != confirmPassword:
+                flash('Passwords do not match.', category='error')
+                return redirect(url_for('reset_password', email=email))
+            elif user.check_password(password_hash):
+                flash('New password cannot be the same as the old password.', category='error')
+                return redirect(url_for('reset_password', email=email))
+            elif not re.match(r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)', password_hash):
+                flash('Password must contain at least one number, one uppercase letter, and one special character.', category='error')
+                return redirect(url_for('reset_password', email=email))
+            else:
+                user.set_password(password_hash)
+                db_sessions.commit()
+                flash('Password reset successfully!', category='success')
+                return redirect(url_for('login'))
+        else:
+            flash('User not found.', category='error')
+    return render_template('reset-password.html', email=email)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -76,6 +155,7 @@ def register():
             
             return redirect(url_for('dashboard'))  # Redirect to dashboard after signup
     return render_template('register.html')
+
 
 
 @app.route('/logout')
@@ -362,5 +442,4 @@ if __name__ == "__main__":
 
     # while True:
     #     time.sleep(1)
-    # make api call in js
 

@@ -15,7 +15,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'database.db'))
 url = f'sqlite:///{db_path}'
 
-print(f"Using database at: {db_path}")
+# print(f"Using database at: {db_path}")
 
 # url = 'sqlite:///' + os.path.join(os.path.dirname(__file__), './database.db')
 

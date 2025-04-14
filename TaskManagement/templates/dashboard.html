@@ -123,14 +123,6 @@
                 <tbody id="taskTableBody" method="GET" action="/task/dashboard">
                     <!-- Rows will be dynamically populated here -->
                     {% for task in tasks %}
-                    <form action="{{ url_for('features.sync_to_calendar') }}" method="POST" style="display:inline;">
-                        <input type="hidden" name="title" value="{{ task.name }}">
-                        <input type="hidden" name="description" value="{{ task.description }}">
-                        <input type="hidden" name="due_date" value="{{ task.dueDate.isoformat() }}">
-                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                          📅 Sync to Google Calendar
-                        </button>
-                      </form>
                       
                     <tr class="priority-{{ task.priority|lower }}">
                         <td>
@@ -141,7 +133,22 @@
                             <!-- Delete Button -->
                             <button class="btn btn-danger btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">Delete</button>
                             <!-- Sync to Calendar -->
-                            <button id="sync-btn" class="btn btn-secondary btn-sm" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
+                            <!-- <button id="sync-btn" class="btn btn-secondary btn-sm" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button> -->
+                            <form action="{{ url_for('features.sync_to_calendar') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="task_id" value="{{ task.id }}">
+                                <input type="hidden" name="title" value="{{ task.name }}">
+                                <input type="hidden" name="description" value="{{ task.description }}">
+                                <input type="hidden" name="due_date" value="{{ task.dueDate.isoformat() }}">
+                                {% if task.isSynced == 0 %}
+                                    <button id="sync-btn" type="submit" class="btn btn-sm btn-outline-primary">
+                                        📅 Sync to Google Calendar
+                                    </button>
+                                {% else %}
+                                    <button id="sync-btn" class="btn btn-sm btn-outline-primary" disabled>
+                                        Synced to Google Calendar
+                                    </button>
+                                {% endif %}
+                            </form>
 
                         <td>{{ task.name }}</td>
                         <td>{{ task.description }}</td>

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, login_user, logout_user, current_user
 from TaskManagement.models import User
 from TaskManagement.database import db_sessions
-from TaskManagement.email_notif import send_password_reset_notification, send_registration_notification
+from TaskManagement.email_notif import send_password_reset_notification, send_registration_notification, send_password_reset_success_notification
 from datetime import datetime
 import random
 import re
@@ -96,6 +96,7 @@ def reset_password(email):
             else:
                 user.set_password(password_hash)
                 db_sessions.commit()
+                send_password_reset_success_notification(user, email) # Send email for password reset
                 flash('Password reset successfully!', category='success')
                 return redirect(url_for('auth.login'))
         else:

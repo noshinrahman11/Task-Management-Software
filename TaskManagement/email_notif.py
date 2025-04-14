@@ -112,6 +112,36 @@ def send_password_reset_notification(user, recipient_email, password_reset_code)
     """
     send_email(subject, [recipient_email], body)
 
+def send_password_reset_success_notification(user, recipient_email):
+    subject = f"Password Reset Successful"
+    body = f"""
+    Hello {user.FirstName},
+
+    Your password has been successfully reset.
+
+    If you did not initiate this change, please contact support immediately.
+
+    Sincerely,
+    Task Management System
+    """
+    send_email(subject, [recipient_email], body)
+
+def send_calendar_sync_notification(user, task):
+    subject = f"Task Synced to Calendar"
+    body = f"""
+    Hello {user.FirstName},
+
+    The following task has been synced to your Google Calendar:
+
+    Task: {task.name}
+    Description: {task.description}
+    Due Date: {task.dueDate.strftime('%Y-%m-%d %H:%M')}
+
+    Regards,
+    Task Management System
+    """
+    send_email(subject, [user.email], body)  # Send email notification
+
 def check_task_deadlines():
     """Check for tasks that are due in 24 hours and send email notifications."""
     print("Inside check_task_deadlines function...")

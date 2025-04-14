@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import login_required, current_user
 from TaskManagement.models import User, Task, UserTask
 from datetime import datetime
-from TaskManagement.email_notif import send_task_notification
+from TaskManagement.email_notif import send_calendar_sync_notification
 from TaskManagement.reports import generate_progress_pie_chart
 from TaskManagement.calendar_sync import add_task_to_calendar
 from TaskManagement.database import db_sessions
@@ -70,6 +70,7 @@ def sync_to_calendar():
     # Add task to Google Calendar
     try:
         add_task_to_calendar(task, task_title, task_description, task_due_date)
+        send_calendar_sync_notification(current_user, task)  # Send email notification
 
         # Increment isSynced 
         task.isSynced += 1

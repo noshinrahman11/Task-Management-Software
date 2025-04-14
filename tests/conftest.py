@@ -1,7 +1,7 @@
 import pytest
 import os
-from database import db_sessions, init_db, drop_db
-from __init__ import create_app, Config, TestingConfig
+from TaskManagement.database import db_sessions, init_db, drop_db
+from TaskManagement.__init__ import create_app, Config, TestingConfig
 
 @pytest.fixture(scope="session")
 def test_app():

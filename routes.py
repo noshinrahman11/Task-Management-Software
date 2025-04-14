@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, flash
 from datetime import datetime
-from calendar_sync import add_task_to_calendar
+from TaskManagement.calendar_sync import add_task_to_calendar
 
 # Create a Blueprint
 routes = Blueprint('routes', __name__)

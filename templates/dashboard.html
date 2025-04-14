@@ -132,14 +132,8 @@
                             <!-- Delete Button -->
                             <button class="btn btn-danger btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">Delete</button>
                             <!-- Sync to Calendar -->
-                            <button id="sync-btn" class="btn btn-secondary btn-sm" class="td-btns" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
-                            <form action="/sync_to_calendar" method="POST">
-                                <input type="hidden" name="title" value="{{ task.title }}">
-                                <input type="hidden" name="description" value="{{ task.description }}">
-                                <input type="hidden" name="due_date" value="{{ task.due_date }}">
-                                <button type="submit" class="btn btn-primary">Sync to Calendar</button>
-                            </form>
-                        </td>
+                            <button id="sync-btn" class="btn btn-secondary btn-sm" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
+
                         <td>{{ task.name }}</td>
                         <td>{{ task.description }}</td>
                         <td>{{ task.startDate }}</td>

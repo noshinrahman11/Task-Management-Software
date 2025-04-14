@@ -21,7 +21,7 @@ def authenticate_google_calendar():
     """Authenticate and return the Google Calendar service."""
     creds = None
     # Check if token.json exists (stores user's access and refresh tokens)
-    token_path = resource_path("token.json")
+    token_path = resource_path("TaskManagement/token.json")
     # if os.path.exists('token.json'):
     if os.path.exists(token_path):
         # creds = Credentials.from_authorized_user_file('token.json', SCOPES)
@@ -34,7 +34,7 @@ def authenticate_google_calendar():
             # flow = InstalledAppFlow.from_client_secrets_file(
             #     'credentials.json', SCOPES)
             flow = InstalledAppFlow.from_client_secrets_file(
-                resource_path("credentials.json"), SCOPES)
+                resource_path("TaskManagement/credentials.json"), SCOPES)
 
             creds = flow.run_local_server(port=0)
         # Save the credentials for future use

@@ -1,8 +1,8 @@
 from flask_mail import Message
 from flask import current_app
-from __init__ import mail
+from TaskManagement.__init__ import mail
 from datetime import datetime, timedelta
-from models import Task, User
+from TaskManagement.models import Task, User
 
 # Admin password = "@dminPassword1"
 # User# password = P@ssword#

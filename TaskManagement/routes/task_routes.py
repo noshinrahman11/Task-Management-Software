@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import login_required, current_user
-from models import User, Task, UserTask, Project, UserProject, ProjectTask 
-from database import init_db, db_sessions
+from TaskManagement.models import User, Task, UserTask, Project, UserProject, ProjectTask 
+from TaskManagement.database import init_db, db_sessions
 from flask_session import Session
 import re
 from datetime import datetime
-from email_notif import send_task_notification, check_task_deadlines
-from reports import generate_progress_pie_chart
+from TaskManagement.email_notif import send_task_notification, check_task_deadlines
+from TaskManagement.reports import generate_progress_pie_chart
 
 task_bp = Blueprint('task', __name__)
 

@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from config import Config
-from models import load_user
+from TaskManagement.models import load_user
 from flask_mail import Mail
 
 mail = Mail() # Initialize Flask-Mail

@@ -11,7 +11,13 @@ from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 #     url = "sqlite:///:memory:"  
 # else:
 
-url = 'sqlite:///' + os.path.join(os.path.dirname(__file__), './database.db')
+# Get the absolute path to the database file
+db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'database.db'))
+url = f'sqlite:///{db_path}'
+
+print(f"Using database at: {db_path}")
+
+# url = 'sqlite:///' + os.path.join(os.path.dirname(__file__), './database.db')
 
 # Create the database engine
 engine = create_engine(url)
@@ -25,7 +31,7 @@ Base.query = db_sessions.query_property()
 
 # Initialize the database (create tables)
 def init_db():
-    import models  # Import models to register them with SQLAlchemy
+    import TaskManagement.models as models  # Import models to register them with SQLAlchemy
     Base.metadata.create_all(bind=engine)
 
 # # Clean up the database (used for testing)

@@ -1,6 +1,6 @@
 import unittest
 from app import create_app, db_sessions
-from database import Base, engine  # Import Base and engine from your database module
+from TaskManagement.database import Base, engine  # Import Base and engine from your database module
 
 class FlaskTestCase(unittest.TestCase):
     

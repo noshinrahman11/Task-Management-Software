@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import login_required, current_user
-from models import User, Task, UserTask
+from TaskManagement.models import User, Task, UserTask
 from datetime import datetime
-from email_notif import send_task_notification
-from reports import generate_progress_pie_chart
-from calendar_sync import add_task_to_calendar
+from TaskManagement.email_notif import send_task_notification
+from TaskManagement.reports import generate_progress_pie_chart
+from TaskManagement.calendar_sync import add_task_to_calendar
 
 features_bp = Blueprint('features', __name__)
 

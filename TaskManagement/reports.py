@@ -1,6 +1,7 @@
 import sqlite3
 import plotly.graph_objects as go
 import plotly.io as pio
+from TaskManagement.database import db_path
 
 
 # def fetch_task_data(user_id):
@@ -36,7 +37,7 @@ import plotly.io as pio
 #     return chart_html  # Return HTML instead of displaying
 
 def fetch_task_data(user_id):
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     query = """

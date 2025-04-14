@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
-from models import User
-from database import db_sessions
-from email_notif import send_role_notification
+from TaskManagement.models import User
+from TaskManagement.database import db_sessions
+from TaskManagement.email_notif import send_role_notification
 
 admin_bp = Blueprint('admin', __name__)
 

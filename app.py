@@ -1,13 +1,13 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, session
 from flaskwebgui import FlaskUI
-from __init__ import create_app
-from database import init_db, db_sessions
+from TaskManagement.__init__ import create_app
+from TaskManagement.database import init_db, db_sessions
 from flask_session import Session
 from datetime import datetime
-from email_notif import check_task_deadlines
+from TaskManagement.email_notif import check_task_deadlines
 import time
 import threading
-from routes.__init__ import register_routes
+from TaskManagement.routes.__init__ import register_routes
 
 app = create_app()
 with app.app_context():
@@ -15,15 +15,15 @@ with app.app_context():
     register_routes(app)
 
 
-@app.errorhandler(401)
-def unauthorized(e):
-    print("401 error")
-    return render_template("404.html")
+# @app.errorhandler(401)
+# def unauthorized(e):
+#     print("401 error")
+#     return render_template("404.html")
     
-@app.errorhandler(404)
-def not_found(e):
-    print("404 error")
-    return redirect(url_for('404.html'))
+# @app.errorhandler(404)
+# def not_found(e):
+#     print("404 error")
+#     return redirect(url_for('auth.login'))
 
 if __name__ == "__main__":
     # app.run(host='localhost', port=5000, debug=True)

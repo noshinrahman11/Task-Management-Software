@@ -1,14 +1,14 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, login_user, logout_user, current_user
-from models import User
-from database import db_sessions
-from email_notif import send_password_reset_notification, send_registration_notification
+from TaskManagement.models import User
+from TaskManagement.database import db_sessions
+from TaskManagement.email_notif import send_password_reset_notification, send_registration_notification
 from datetime import datetime
 import random
 import re
 
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 @auth_bp.route('/')
 def index():

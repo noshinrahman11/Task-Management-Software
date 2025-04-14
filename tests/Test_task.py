@@ -1,6 +1,6 @@
 import unittest
 from app import app, db_sessions
-from models import User, Task
+from TaskManagement.models import User, Task
 
 class TestTaskCreation(unittest.TestCase):
 

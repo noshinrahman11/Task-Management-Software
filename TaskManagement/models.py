@@ -4,9 +4,9 @@
 from flask_login import UserMixin
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from database import Base
+from TaskManagement.database import Base
 
-from login import login_manager
+from TaskManagement.login import login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 
 @login_manager.user_loader

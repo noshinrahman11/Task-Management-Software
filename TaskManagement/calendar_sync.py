@@ -20,27 +20,82 @@ def resource_path(relative_path):
 def authenticate_google_calendar():
     """Authenticate and return the Google Calendar service."""
     creds = None
-    # Check if token.json exists (stores user's access and refresh tokens)
-    token_path = resource_path("TaskManagement/token.json")
-    # if os.path.exists('token.json'):
+
+    # Save token.json in a writable location (user folder or project root in dev)
+    if getattr(sys, 'frozen', False):
+        # App is frozen (running as .exe)
+        base_path = os.path.dirname(sys.executable)
+    else:
+        # Running normally (in dev mode)
+        base_path = os.path.dirname(__file__)
+
+    # user_data_dir = os.path.join(base_path, "TaskManagement")
+    user_data_dir = base_path
+    os.makedirs(user_data_dir, exist_ok=True)
+    token_path = os.path.join(user_data_dir, "token.json")
+    credentials_path = os.path.join(user_data_dir, "credentials.json")
+
+    # Check if the credentials file exists before continuing
+    if not os.path.exists(credentials_path):
+        raise FileNotFoundError(f"credentials.json not found at {credentials_path}")
+
     if os.path.exists(token_path):
-        # creds = Credentials.from_authorized_user_file('token.json', SCOPES)
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    
     # If no valid credentials, authenticate the user
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            # flow = InstalledAppFlow.from_client_secrets_file(
-            #     'credentials.json', SCOPES)
             flow = InstalledAppFlow.from_client_secrets_file(
-                resource_path("TaskManagement/credentials.json"), SCOPES)
-
+                credentials_path, SCOPES)
             creds = flow.run_local_server(port=0)
-        # Save the credentials for future use
+        
         with open(token_path, 'w') as token:
             token.write(creds.to_json())
+    
     return build('calendar', 'v3', credentials=creds)
+
+# def authenticate_google_calendar():
+#     """Authenticate and return the Google Calendar service."""
+#     creds = None
+
+#     # Save token.json in a writable location (user folder or project root in dev)
+#     if getattr(sys, 'frozen', False):
+#         # App is frozen (running as .exe)
+#         base_path = os.path.dirname(sys.executable)
+#     else:
+#         # Running normally (in dev mode)
+#         base_path = os.path.dirname(__file__)
+
+#     user_data_dir = os.path.join(base_path, "TaskManagement")
+#     # user_data_dir = os.path.join(os.path.dirname(__file__), "TaskManagement")
+#     # user_data_dir = os.path.expanduser("~/.Task Management Software")
+#     os.makedirs(user_data_dir, exist_ok=True)
+#     token_path = os.path.join(user_data_dir, "token.json")
+
+
+#     # Check if token.json exists (stores user's access and refresh tokens)
+#     # token_path = resource_path("TaskManagement/token.json")
+#     # if os.path.exists('token.json'):
+#     if os.path.exists(token_path):
+#         # creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+#         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+#     # If no valid credentials, authenticate the user
+#     if not creds or not creds.valid:
+#         if creds and creds.expired and creds.refresh_token:
+#             creds.refresh(Request())
+#         else:
+#             # flow = InstalledAppFlow.from_client_secrets_file(
+#             #     'credentials.json', SCOPES)
+#             flow = InstalledAppFlow.from_client_secrets_file(
+#                 resource_path("TaskManagement/credentials.json"), SCOPES)
+
+#             creds = flow.run_local_server(port=0)
+#         # Save the credentials for future use
+#         with open(token_path, 'w') as token:
+#             token.write(creds.to_json())
+#     return build('calendar', 'v3', credentials=creds)
 
 try:
     service = authenticate_google_calendar()  # Use the function to get the service object

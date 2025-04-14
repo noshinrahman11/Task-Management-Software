@@ -47,7 +47,7 @@ except HttpError as error:
     # Handle errors from the API
     print('An error occurred:', error)
 
-def add_task_to_calendar(task_title, task_description, task_due_date):
+def add_task_to_calendar(task_id, task_title, task_description, task_due_date):
     """Add a task to Google Calendar."""
     service = authenticate_google_calendar()
     print("Authenticated to Google Calendar")

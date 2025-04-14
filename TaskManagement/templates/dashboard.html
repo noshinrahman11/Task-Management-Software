@@ -135,12 +135,19 @@
                             <!-- Sync to Calendar -->
                             <!-- <button id="sync-btn" class="btn btn-secondary btn-sm" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button> -->
                             <form action="{{ url_for('features.sync_to_calendar') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="task_id" value="{{ task.id }}">
                                 <input type="hidden" name="title" value="{{ task.name }}">
                                 <input type="hidden" name="description" value="{{ task.description }}">
                                 <input type="hidden" name="due_date" value="{{ task.dueDate.isoformat() }}">
-                                <button id="sync-btn" type="submit" class="btn btn-sm btn-outline-primary">
-                                  📅 Sync to Google Calendar
-                                </button>
+                                {% if task.isSynced == 0 %}
+                                    <button id="sync-btn" type="submit" class="btn btn-sm btn-outline-primary">
+                                        📅 Sync to Google Calendar
+                                    </button>
+                                {% else %}
+                                    <button id="sync-btn" class="btn btn-sm btn-outline-primary" disabled>
+                                        Synced to Google Calendar
+                                    </button>
+                                {% endif %}
                             </form>
 
                         <td>{{ task.name }}</td>

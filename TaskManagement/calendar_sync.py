@@ -5,6 +5,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from TaskManagement.database import db_sessions  
 
 # If modifying these SCOPES, delete the file token.json
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -47,7 +48,7 @@ except HttpError as error:
     # Handle errors from the API
     print('An error occurred:', error)
 
-def add_task_to_calendar(task_id, task_title, task_description, task_due_date):
+def add_task_to_calendar(task, task_title, task_description, task_due_date):
     """Add a task to Google Calendar."""
     service = authenticate_google_calendar()
     print("Authenticated to Google Calendar")
@@ -68,5 +69,35 @@ def add_task_to_calendar(task_id, task_title, task_description, task_due_date):
 
     # Insert the event into the user's calendar
     event = service.events().insert(calendarId='primary', body=event).execute()
+    task.eventId = event['id']  # Store the event ID in the task object
+    db_sessions.commit()  # Save the changes to the database
     print(f"Task added to calendar: {event.get('htmlLink')}")
 
+def sync_calendar_update(task):
+    service = authenticate_google_calendar()
+    print("Authenticated to Google Calendar")
+
+    if not task.eventId:
+        print("No eventId found. Cannot update.")
+        return
+
+    updated_event = {
+        'summary': task.name,
+        'description': task.description,
+        'start': {
+            'dateTime': task.dueDate.isoformat(),
+            'timeZone': 'UTC',
+        },
+        'end': {
+            'dateTime': (task.dueDate + datetime.timedelta(hours=1)).isoformat(),
+            'timeZone': 'UTC',
+        },
+    }
+
+    event = service.events().update(
+        calendarId='primary',
+        eventId=task.eventId,
+        body=updated_event
+    ).execute()
+
+    print(f"Task updated in calendar: {event.get('htmlLink')}")

@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 from TaskManagement.email_notif import send_task_notification, check_task_deadlines
 from TaskManagement.reports import generate_progress_pie_chart
+from TaskManagement.calendar_sync import sync_calendar_update
 
 task_bp = Blueprint('task', __name__)
 
@@ -151,6 +152,10 @@ def edit_task(task_id):
         user_task_entry = UserTask(user_id=assigned_user.id, task_id=task.id)
         db_sessions.add(user_task_entry)
         db_sessions.commit()  # Save changes
+
+        if task.isSynced == 1:
+            sync_calendar_update(task)  # Sync calendar after update
+
         print("Assigned to updated successfully.")
         flash('Task updated successfully!', category='success')
         return redirect(url_for('task.dashboard'))

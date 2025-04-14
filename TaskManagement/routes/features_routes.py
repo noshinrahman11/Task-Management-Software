@@ -69,7 +69,7 @@ def sync_to_calendar():
 
     # Add task to Google Calendar
     try:
-        add_task_to_calendar(task_id, task_title, task_description, task_due_date)
+        add_task_to_calendar(task, task_title, task_description, task_due_date)
 
         # Increment isSynced 
         task.isSynced += 1

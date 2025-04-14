@@ -7,7 +7,7 @@ from datetime import datetime
 from TaskManagement.email_notif import check_task_deadlines
 import time
 import threading
-from TaskManagement.routes.__init__ import register_routes
+from TaskManagement.routes import register_routes
 
 app = create_app()
 with app.app_context():

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   -->
+    <!-- <script src="https://unpkg.com/chrono-node@2.3.4/dist/chrono.min.js"></script> -->
+    <!-- <script defer src="https://cdn.jsdelivr.net/npm/chrono-node/dist/chrono.min.js"></script> -->
+    <!-- <script defer src="https://cdn.jsdelivr.net/npm/chrono-node@2.3.4/chrono.min.js"></script> -->
+
+
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/dashboard.css') }}">
+    
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        // Form validation, no empty fields, valid email, password requirements
+        function validateForm() {
+            var taskName = document.getElementById('taskName').value;
+            var description = document.getElementById('description').value;
+            var startDate = document.getElementById('startDate').value;
+            var dueDate = document.getElementById('dueDate').value;
+            var category = document.getElementById('category').value;
+            var status = document.getElementById('status').value;
+            var priority = document.getElementById('priority').value;
+            var assignedTo = document.getElementById('assignedTo').value;
+            
+            if (dueDate < startDate) {
+                alert('Due date must be after start date.')
+                return false; // Due date is not after start date
+            }
+
+            return true;
+        }
+
+        //--------------------------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', function () {
+        let table = document.querySelector('table tbody');
+        let rows = Array.from(table.querySelectorAll('tr'));
+
+        // Sorting priority first, then category, then due date
+        const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+        const categoryOrder = { 'Work': 1, 'Personal': 2, 'Other': 3 };
+
+        rows.sort((rowA, rowB) => {
+            let priorityA = rowA.cells[6].textContent.trim();  // Priority column index
+            let priorityB = rowB.cells[6].textContent.trim();
+            let categoryA = rowA.cells[4].textContent.trim();  // Category column index
+            let categoryB = rowB.cells[4].textContent.trim();
+            let dueDateA = new Date(rowA.cells[5].textContent.trim());  // Due date column index
+            let dueDateB = new Date(rowB.cells[5].textContent.trim());
+
+            // First sort by priority
+            let priorityComparison = priorityOrder[priorityA] - priorityOrder[priorityB];
+            if (priorityComparison !== 0) return priorityComparison;
+
+            // If priorities are equal, sort by category
+            let categoryComparison = categoryOrder[categoryA] - categoryOrder[categoryB];
+            if (categoryComparison !== 0) return categoryComparison;
+
+            // If categories are also equal, sort by due date
+            return dueDateA - dueDateB;
+        });
+
+        // Reorder rows in the table
+        rows.forEach(row => table.appendChild(row));
+    });
+    </script>
+
+
+</head>
+<body>
+    
+    <div class="logout-button">
+        <a href="/auth/logout">
+            <button type="button">Logout</button>
+        </a>
+    </div>        
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Task Management Dashboard</h1>
+        <!--Admin Dashboard button only shown if user is an admin-->
+        {% if user.Role == "Admin" %}
+            <a class="btn btn-primary mb-3" href="{{ url_for('admin.admin') }}">Admin Dashboard</a>
+        {% endif %}
+        <!-- button for viewing reports -->
+        <a class="btn btn-primary mb-3" href="{{ url_for('features.reports') }}">View Reports</a>
+        <!-- button for creating new task -->
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
+        <!-- button to select filters -->
+        <a id="filter-by" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterTaskModal">Filter By</a>
+
+        <div id="table-container">
+            <table class="table table-bordered table-striped">
+                <!-- <caption>{{current_user.username}}'s Task List</caption> -->
+                <thead class="table-dark">
+                    <tr>
+                        <th> </th>
+                        <th>Task Name</th>
+                        <th>Description</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <!-- <th>Assigned To</th> -->
+                        <th>Assigned By</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody" method="GET" action="/task/dashboard">
+                    <!-- Rows will be dynamically populated here -->
+                    {% for task in tasks %}
+                    <form action="{{ url_for('routes.sync_to_calendar') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="title" value="{{ task.name }}">
+                        <input type="hidden" name="description" value="{{ task.description }}">
+                        <input type="hidden" name="due_date" value="{{ task.dueDate.isoformat() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                          📅 Sync to Google Calendar
+                        </button>
+                      </form>
+                      
+                    <tr class="priority-{{ task.priority|lower }}">
+                        <td>
+                            <!-- Edit Task Modal Trigger -->
+                            <button class="btn btn-warning btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#editTaskModal{{ task.id }}">
+                                Edit
+                            </button>
+                            <!-- Delete Button -->
+                            <button class="btn btn-danger btn-sm" class="td-btns" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">Delete</button>
+                            <!-- Sync to Calendar -->
+                            <button id="sync-btn" class="btn btn-secondary btn-sm" onclick="window.location.href = '/features/calendar_sync/{{ task.id }}';">Sync to Calendar</button>
+
+                        <td>{{ task.name }}</td>
+                        <td>{{ task.description }}</td>
+                        <td>{{ task.startDate }}</td>
+                        <td>{{ task.dueDate }}</td>
+                        <td>{{ task.category }}</td>
+                        <td>{{ task.status }}</td>
+                        <td>{{ task.priority }}</td>
+                        <!-- <td>{{ task.assignedTo }}</td> -->
+                         <td>{{ task.assignedBy }}</td>
+                        <!-- <td>{{ task.assigned_by_username }}</td> -->
+                    </tr>
+    
+                    <!-- Edit Task Modal -->
+                    <div class="modal fade" id="editTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Edit Task</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ url_for('task.edit_task', task_id=task.id) }}" method="POST">
+                                        <div class="mb-3">
+                                            <label for="taskName" class="form-label">Task Name</label>
+                                            <input type="text" class="form-control" name="taskName" value="{{ task.name }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <input type="text" class="form-control" name="description" value="{{ task.description }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="startDate" class="form-label">Start Date</label>
+                                            <input type="datetime-local" class="form-control" name="startDate" value="{{ task.startDate.strftime('%Y-%m-%dT%H:%M') }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="dueDate" class="form-label">Due Date</label>
+                                            <input type="datetime-local" class="form-control" name="dueDate" value="{{ task.dueDate.strftime('%Y-%m-%dT%H:%M') }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="category" class="form-label">Category</label>
+                                            <select class="form-control" name="category">
+                                                <option value="Work" {% if task.category == "Work" %}selected{% endif %}>Work</option>
+                                                <option value="Personal" {% if task.category == "Personal" %}selected{% endif %}>Personal</option>
+                                                <option value="Other" {% if task.category == "Other" %}selected{% endif %}>Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="status" class="form-label">Status</label>
+                                            <select class="form-control" name="status">
+                                                <option value="Not Started" {% if task.status == "Not Started" %}selected{% endif %}>Not Started</option>
+                                                <option value="In Progress" {% if task.status == "In Progress" %}selected{% endif %}>In Progress</option>
+                                                <option value="Completed" {% if task.status == "Completed" %}selected{% endif %}>Completed</option>
+                                                <option value="On Hold" {% if task.status == "On Hold" %}selected{% endif %}>On Hold</option>
+                                                <option value="Cancelled" {% if task.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="priority" class="form-label">Priority</label>
+                                            <select class="form-control" name="priority">
+                                                <option value="Low" {% if task.priority == "Low" %}selected{% endif %}>Low</option>
+                                                <option value="Medium" {% if task.priority == "Medium" %}selected{% endif %}>Medium</option>
+                                                <option value="High" {% if task.priority == "High" %}selected{% endif %}>High</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="assignedTo" class="form-label">Assigned To</label>
+                                            <select class="form-control" name="assignedTo">
+                                                {% if user.Role == "Admin"%}
+                                                    {% for user in users %}
+                                                        <option value="{{ user.id }}" {% if task.assignedTo == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                                    {% endfor %}
+                                                {% elif user.Role == "Manager"%}
+                                                    {% for user in users %}
+                                                        {% if user.Role == 'Staff' %}
+                                                            <option value="{{ user.id }}" {% if task.assignedTo == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <option value="{{ user.id }}" selected>{{ user.username }}</option>
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <!-- Submit Button was here before -->
+                                        <button type="submit" class="btn btn-success">Save Changes</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Delete Task Modal -->
+                    <div class="modal fade" id="deleteTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Task</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-danger">Are you sure you want to delete this task?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{{ url_for('task.delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+    
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+    
+                            </div>
+                        </div>  
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTaskModalLabel">Add New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTaskForm" action=/task/dashboard method="POST" onsubmit="return validateForm()">
+                        <!-- NLP Smart Input Field START -->
+                        <div class="mb-3">
+                            <label for="nlpInput" class="form-label">Smart Task Entry (NLP)</label>
+                            <input type="text" id="nlpInput" class="form-control" placeholder="e.g. Submit report by Friday, high priority, work category">
+                            <button type="button" onclick="processNLPInput()" class="btn btn-secondary mt-2">Auto-Fill Fields</button>
+                        </div>
+                        <!--  NLP Smart Input Field END -->
+                    
+                        <!-- Existing Task Name Field -->
+                        <div class="mb-3">
+                            <label for="taskName" class="form-label">Task Name</label>
+                            <input type="text" class="form-control" id="taskName" name="taskName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="description" name="description" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="datetime-local" class="form-control" id="startDate" name="startDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dueDate" class="form-label">Due Date</label>
+                            <input type="datetime-local" class="form-control" id="dueDate" name="dueDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-control" id="category" name="category" required>
+                                <option value="Work">Work</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <!-- FIXME: Add received and accepted after adding manager -->
+                            <select class="form-control" id="status" name="status" required>
+                                <option value="Not started">Not Started</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="On Hold">On Hold</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-control" id="priority" name="priority" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignedTo" class="form-label">Assigned To</label>
+                            <select class="form-control" id="assignedTo" name="assignedTo" required>
+                                {% if current_user.Role == 'Admin' %}
+                                    {% for user in users %}
+                                        {% if user == current_user %}
+                                            <option value="{{ user.id }}" selected>{{ user.username }}</option>
+                                        {% else %}
+                                            <option value="{{ user.id }}">{{ user.username }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% elif current_user.Role == 'Manager' %}
+                                    <option value="{{ current_user.id }}" selected>{{ current_user.username }}</option>
+                                    {% for user in users %}
+                                        {% if user.Role == 'Staff' %}
+                                            <option value="{{ user.id }}">{{ user.username }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="{{ user.id }}" selected>{{ user.username }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Task</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Task Modal -->
+    <div id="filterTaskModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Filter Tasks</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="GET" action="{{ url_for('task.dashboard') }}">
+              <div class="modal-body">
+                <h6>Status</h6>
+                {% for status in ["Not Started", "In Progress", "Completed", "On Hold", "Cancelled"] %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="status" value="{{ status }}" id="status_{{ status }}">
+                    <label class="form-check-label" for="status_{{ status }}">{{ status }}</label>
+                  </div>
+                {% endfor %}
+      
+                <h6>Priority</h6>
+                {% for priority in ["Low", "Medium", "High"] %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="priority" value="{{ priority }}" id="priority_{{ priority }}">
+                    <label class="form-check-label" for="priority_{{ priority }}">{{ priority }}</label>
+                  </div>
+                {% endfor %}
+      
+                <h6>Category</h6>
+                {% for category in ["Work", "Personal", "Other"] %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="category" value="{{ category }}" id="category_{{ category }}">
+                    <label class="form-check-label" for="category_{{ category }}">{{ category }}</label>
+                  </div>
+                {% endfor %}
+      
+                <h6>Assigned By</h6>
+                {% for user in assigned_by_users %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assignedBy" value="{{ user.username }}" id="assignedBy_{{ user.username }}">
+                    <label class="form-check-label" for="assignedBy_{{ user.username }}">{{ user.username }}</label>
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chrono-node@2.3.1/dist/chrono.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/chrono-node@2.3.4/dist/chrono.min.js"></script> -->
+    
+        
+    <script>
+        function processNLPInput() {
+        console.log("NLP Function Called"); // Test this 
+        const input = document.getElementById('nlpInput').value.toLowerCase();
+        console.log("Input:", input);
+
+        // const parsedDate = chrono.parseDate(input);
+        // console.log("Parsed Date:", parsedDate);
+
+        //if (parsedDate) {
+        //    const formatted = new Date(parsedDate).toISOString().slice(0, 16);
+        //    document.getElementById('dueDate').value = formatted;
+        //}
+
+        if (input.includes("high")) {
+            document.getElementById('priority').value = "High";
+        } else if (input.includes("medium")) {
+            document.getElementById('priority').value = "Medium";
+        } else if (input.includes("low")) {
+            document.getElementById('priority').value = "Low";
+        }
+
+        if (input.includes("work")) {
+            document.getElementById('category').value = "Work";
+        } else if (input.includes("personal")) {
+            document.getElementById('category').value = "Personal";
+        } else if (input.includes("other")) {
+            document.getElementById('category').value = "Other";
+        }
+
+        let task = input.replace(/by .*|high|medium|low|priority|work|personal|other|category/g, "").trim();
+        document.getElementById('taskName').value = task.charAt(0).toUpperCase() + task.slice(1);
+    }
+    </script>
+
+
+
+</body>
+</html>

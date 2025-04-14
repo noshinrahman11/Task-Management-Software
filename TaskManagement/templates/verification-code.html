@@ -1,0 +1,47 @@
+<!-- NOT IN USE -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/login.css') }}">
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+</head>
+<body>
+    <div class="container">
+        <h1>Reset Password:</h1>
+
+        <!-- Form to enter verification code -->
+        <form method="post" action="{{ url_for('auth.verify_code') }}">
+            <div class="form-group">
+                <label for="verification_code">Verification Code:</label>
+                <input type="text" id="verification_code" name="verification_code" placeholder="Enter the verification code that was sent to your email:" required>
+            </div>
+            <button type="submit">Verify</button>
+            <br><br>
+            <!-- Switch to Login Button -->
+            <button class="switch-register-login" onclick="window.location.href = '/auth/login';">Return to Login</button> 
+
+            <!-- <button data-bs-toggle="modal" data-bs-target="#verifCodeModal">Send Verification Code</button> -->
+        </form>
+    </div>
+
+    
+    <script src="{{url_for('static', filename='js/login.js')}}"></script>
+</body>
+</html>

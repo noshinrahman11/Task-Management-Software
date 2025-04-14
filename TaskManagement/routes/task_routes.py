@@ -5,9 +5,9 @@ from TaskManagement.database import init_db, db_sessions
 from flask_session import Session
 import re
 from datetime import datetime
-from TaskManagement.email_notif import send_task_notification, check_task_deadlines
+from TaskManagement.email_notif import send_task_notification
 from TaskManagement.reports import generate_progress_pie_chart
-from TaskManagement.calendar_sync import sync_calendar_update
+from TaskManagement.calendar_sync import sync_calendar_update, delete_task_from_calendar
 
 task_bp = Blueprint('task', __name__)
 
@@ -186,6 +186,9 @@ def delete_task(task_id):
     db_sessions.delete(task)
     db_sessions.commit()
     print("Task deleted from database.")
+
+    if task.isSynced == 1:
+        delete_task_from_calendar(task)
 
     flash('Task deleted successfully!', category='success')
     return redirect(url_for('task.dashboard'))

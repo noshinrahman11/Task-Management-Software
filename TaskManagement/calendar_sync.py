@@ -101,3 +101,14 @@ def sync_calendar_update(task):
     ).execute()
 
     print(f"Task updated in calendar: {event.get('htmlLink')}")
+
+def delete_task_from_calendar(task):
+    service = authenticate_google_calendar()
+    print("Authenticated to Google Calendar")
+
+    if not task.eventId:
+        print("No eventId found. Cannot delete.")
+        return
+
+    service.events().delete(calendarId='primary', eventId=task.eventId).execute()
+    print(f"Task deleted from calendar: {task.eventId}")  # Log the deletion

@@ -26,7 +26,7 @@ with app.app_context():
 #     return redirect(url_for('auth.login'))
 
 if __name__ == "__main__":
-    # app.run(host='localhost', port=5000, debug=True)
+    app.run(host='localhost', port=5000, debug=True)
     
     # def run_flask():
     #     print ("Starting Flask app...")
@@ -52,11 +52,11 @@ if __name__ == "__main__":
 
     print ("Starting Flask app...")
     # app.run(host='0.0.0.0', port=80, debug=True)
-    FlaskUI(app=app,
-            server="flask",
-            width=800,
-            height=600,
-            ).run()
+    # FlaskUI(app=app,
+    #         server="flask",
+    #         width=800,
+    #         height=600,
+    #         ).run()
     
 
 

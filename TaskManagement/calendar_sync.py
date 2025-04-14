@@ -33,7 +33,9 @@ def authenticate_google_calendar():
     user_data_dir = base_path
     os.makedirs(user_data_dir, exist_ok=True)
     token_path = os.path.join(user_data_dir, "token.json")
-    credentials_path = os.path.join(user_data_dir, "credentials.json")
+    # credentials_path = os.path.join(user_data_dir, "credentials.json")
+    credentials_path = resource_path("credentials.json")
+
 
     # Check if the credentials file exists before continuing
     if not os.path.exists(credentials_path):

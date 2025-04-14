@@ -123,7 +123,7 @@
                 <tbody id="taskTableBody" method="GET" action="/task/dashboard">
                     <!-- Rows will be dynamically populated here -->
                     {% for task in tasks %}
-                    <form action="{{ url_for('routes.sync_to_calendar') }}" method="POST" style="display:inline;">
+                    <form action="{{ url_for('features.sync_to_calendar') }}" method="POST" style="display:inline;">
                         <input type="hidden" name="title" value="{{ task.name }}">
                         <input type="hidden" name="description" value="{{ task.description }}">
                         <input type="hidden" name="due_date" value="{{ task.dueDate.isoformat() }}">

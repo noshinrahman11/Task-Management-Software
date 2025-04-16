@@ -6,7 +6,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 # # Check if running in test mode
 # IS_TESTING = os.getenv('TESTING', 'False') == 'True'
 
-# # Define the SQLite database URL, testing uses memory
+# # Define the SQLite database URL, testing uses memoryg
 # if IS_TESTING: 
 #     url = "sqlite:///:memory:"  
 # else:

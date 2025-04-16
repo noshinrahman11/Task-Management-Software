@@ -12,51 +12,72 @@ import os
 # If modifying these SCOPES, delete the file token.json
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_path, relative_path)
-
 def authenticate_google_calendar():
     """Authenticate and return the Google Calendar service."""
     creds = None
-
-    # Save token.json in a writable location (user folder or project root in dev)
-    if getattr(sys, 'frozen', False):
-        # App is frozen (running as .exe)
-        base_path = os.path.dirname(sys.executable)
-    else:
-        # Running normally (in dev mode)
-        base_path = os.path.dirname(__file__)
-
-    # user_data_dir = os.path.join(base_path, "TaskManagement")
-    user_data_dir = base_path
-    os.makedirs(user_data_dir, exist_ok=True)
-    token_path = os.path.join(user_data_dir, "token.json")
-    # credentials_path = os.path.join(user_data_dir, "credentials.json")
-    credentials_path = resource_path("credentials.json")
-
-
-    # Check if the credentials file exists before continuing
-    if not os.path.exists(credentials_path):
-        raise FileNotFoundError(f"credentials.json not found at {credentials_path}")
-
-    if os.path.exists(token_path):
-        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
-    
+    # Check if token.json exists (stores user's access and refresh tokens)
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If no valid credentials, authenticate the user
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                credentials_path, SCOPES)
+                'TaskManagement/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
-        
-        with open(token_path, 'w') as token:
+        # Save the credentials for future use
+        with open('token.json', 'w') as token:
             token.write(creds.to_json())
-    
     return build('calendar', 'v3', credentials=creds)
+
+
+# def resource_path(relative_path):
+#     """ Get absolute path to resource, works for dev and for PyInstaller """
+#     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+#     return os.path.join(base_path, relative_path)
+
+
+# def authenticate_google_calendar():
+    # """Authenticate and return the Google Calendar service."""
+    # creds = None
+
+    # # Save token.json in a writable location (user folder or project root in dev)
+    # if getattr(sys, 'frozen', False):
+    #     # App is frozen (running as .exe)
+    #     base_path = os.path.dirname(sys.executable)
+    # else:
+    #     # Running normally (in dev mode)
+    #     base_path = os.path.dirname(__file__)
+
+    # # user_data_dir = os.path.join(base_path, "TaskManagement")
+    # user_data_dir = base_path
+    # os.makedirs(user_data_dir, exist_ok=True)
+    # token_path = os.path.join(user_data_dir, "token.json")
+    # # credentials_path = os.path.join(user_data_dir, "credentials.json")
+    # credentials_path = resource_path("credentials.json")
+
+
+    # # Check if the credentials file exists before continuing
+    # if not os.path.exists(credentials_path):
+    #     raise FileNotFoundError(f"credentials.json not found at {credentials_path}")
+
+    # if os.path.exists(token_path):
+    #     creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    
+    # # If no valid credentials, authenticate the user
+    # if not creds or not creds.valid:
+    #     if creds and creds.expired and creds.refresh_token:
+    #         creds.refresh(Request())
+    #     else:
+    #         flow = InstalledAppFlow.from_client_secrets_file(
+    #             credentials_path, SCOPES)
+    #         creds = flow.run_local_server(port=0)
+        
+    #     with open(token_path, 'w') as token:
+    #         token.write(creds.to_json())
+    
+    # return build('calendar', 'v3', credentials=creds)
 
 # def authenticate_google_calendar():
 #     """Authenticate and return the Google Calendar service."""

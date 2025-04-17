@@ -120,24 +120,24 @@ def authenticate_google_calendar():
 #             token.write(creds.to_json())
 #     return build('calendar', 'v3', credentials=creds)
 
-try:
-    service = authenticate_google_calendar()  # Use the function to get the service object
+# try:
+#     service = authenticate_google_calendar()  # Use the function to get the service object
 
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+#     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
-    event_result = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
-    events = event_result.get('items', [])
+#     event_result = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+#     events = event_result.get('items', [])
 
-    if not events:
-        print('No upcoming events found.')
+#     if not events:
+#         print('No upcoming events found.')
 
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
+#     for event in events:
+#         start = event['start'].get('dateTime', event['start'].get('date'))
+#         print(start, event['summary'])
 
-except HttpError as error:
-    # Handle errors from the API
-    print('An error occurred:', error)
+# except HttpError as error:
+#     # Handle errors from the API
+#     print('An error occurred:', error)
 
 def add_task_to_calendar(task, task_title, task_description, task_due_date):
     """Add a task to Google Calendar."""
@@ -159,7 +159,9 @@ def add_task_to_calendar(task, task_title, task_description, task_due_date):
     }
 
     # Insert the event into the user's calendar
-    event = service.events().insert(calendarId='primary', body=event).execute()
+    # event = service.events().insert(calendarId='primary', body=event).execute()
+    event = service.events().insert(body=event).execute()
+
     task.eventId = event['id']  # Store the event ID in the task object
     db_sessions.commit()  # Save the changes to the database
     print(f"Task added to calendar: {event.get('htmlLink')}")

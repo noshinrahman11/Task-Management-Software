@@ -3,3 +3,4 @@ __pycache__/
 # Ignore Google API credentials
 credentials.json
 token.json
+database.db

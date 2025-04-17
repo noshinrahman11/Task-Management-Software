@@ -26,8 +26,9 @@ class User(Base, UserMixin):
     email = Column(String(50), unique=True)
     BirthDate = Column(DateTime)
     Role = Column(String(20))
+    google_token_json = Column(String(1000), nullable=True)
 
-    def __init__(self, username=None, password=None, FirstName=None, LastName=None, email=None, BirthDate=None, Role=None):
+    def __init__(self, username=None, password=None, FirstName=None, LastName=None, email=None, BirthDate=None, Role=None, google_token_json=None):
         self.username = username
         self.set_password(password)
         self.FirstName = FirstName
@@ -35,6 +36,7 @@ class User(Base, UserMixin):
         self.email = email
         self.BirthDate = BirthDate
         self.Role = Role
+        self.google_token_json = google_token_json
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -8,28 +8,50 @@ from googleapiclient.errors import HttpError
 from TaskManagement.database import db_sessions 
 import sys
 import os 
+import json
+from TaskManagement.models import User
+from flask_login import current_user
 
 # If modifying these SCOPES, delete the file token.json
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-def authenticate_google_calendar():
-    """Authenticate and return the Google Calendar service."""
+def authenticate_google_calendar(current_user):
     creds = None
-    # Check if token.json exists (stores user's access and refresh tokens)
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If no valid credentials, authenticate the user
+
+    if current_user.google_token_json:
+        creds = Credentials.from_authorized_user_info(json.loads(current_user.google_token_json), SCOPES)
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
-        # Save the credentials for future use
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+
+        # Save token back to user
+        current_user.google_token_json = creds.to_json()
+        db_sessions.commit()
+
     return build('calendar', 'v3', credentials=creds)
+
+# def authenticate_google_calendar():
+#     """Authenticate and return the Google Calendar service."""
+#     creds = None
+#     # Check if token.json exists (stores user's access and refresh tokens)
+#     if os.path.exists('token.json'):
+#         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+#     # If no valid credentials, authenticate the user
+#     if not creds or not creds.valid:
+#         if creds and creds.expired and creds.refresh_token:
+#             creds.refresh(Request())
+#         else:
+#             flow = InstalledAppFlow.from_client_secrets_file(
+#                 'credentials.json', SCOPES)
+#             creds = flow.run_local_server(port=0)
+#         # Save the credentials for future use
+#         with open('token.json', 'w') as token:
+#             token.write(creds.to_json())
+#     return build('calendar', 'v3', credentials=creds)
 
 
 # def resource_path(relative_path):
@@ -141,7 +163,7 @@ def authenticate_google_calendar():
 
 def add_task_to_calendar(task, task_title, task_description, task_due_date):
     """Add a task to Google Calendar."""
-    service = authenticate_google_calendar()
+    service = authenticate_google_calendar(current_user)
     print("Authenticated to Google Calendar")
 
     # Create an event
@@ -160,14 +182,14 @@ def add_task_to_calendar(task, task_title, task_description, task_due_date):
 
     # Insert the event into the user's calendar
     # event = service.events().insert(calendarId='primary', body=event).execute()
-    event = service.events().insert(body=event).execute()
+    event = service.events().insert(calendarId="primary", body=event).execute()
 
     task.eventId = event['id']  # Store the event ID in the task object
     db_sessions.commit()  # Save the changes to the database
     print(f"Task added to calendar: {event.get('htmlLink')}")
 
 def sync_calendar_update(task):
-    service = authenticate_google_calendar()
+    service = authenticate_google_calendar(current_user)
     print("Authenticated to Google Calendar")
 
     if not task.eventId:
@@ -196,7 +218,7 @@ def sync_calendar_update(task):
     print(f"Task updated in calendar: {event.get('htmlLink')}")
 
 def delete_task_from_calendar(task):
-    service = authenticate_google_calendar()
+    service = authenticate_google_calendar(current_user)
     print("Authenticated to Google Calendar")
 
     if not task.eventId:

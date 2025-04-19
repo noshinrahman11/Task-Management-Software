@@ -5,5 +5,4 @@ credentials.json
 credentials-desktop.json
 credentials-web.json
 token.json
-database.db
 fernet.env

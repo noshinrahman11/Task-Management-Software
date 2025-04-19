@@ -27,7 +27,9 @@ fernet = Fernet(fernet_key)
 # If modifying these SCOPES, delete the file token.json
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 # REDIRECT_URI = 'https://task-management-software-1aqw.onrender.com/authorize-redirect'
-REDIRECT_URI = 'http://localhost:5000/authorize-redirect'
+# REDIRECT_URI = 'http://localhost:5000/authorize-redirect'
+REDIRECT_URI = 'https://task-management-software-1-j75h.onrender.com/authorize-redirect'
+
 
 def is_user_google_authed(user):
     if not user.google_token_json:

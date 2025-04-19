@@ -102,6 +102,12 @@
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
         <!-- button to select filters -->
         <a id="filter-by" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#filterTaskModal">Filter By</a>
+        <!-- Button to connect to Google Calendar if not already connected -->
+        {% if not current_user.google_token_json %}
+            <a href="{{ url_for('features.connect_google_calendar') }}" class="btn btn-primary">
+                Connect Google Calendar
+            </a>
+        {% endif %}
 
         <div id="table-container">
             <table class="table table-bordered table-striped">

@@ -13,6 +13,7 @@ import json
 from TaskManagement.models import User
 from flask_login import current_user
 from cryptography.fernet import Fernet
+<<<<<<< HEAD
 from dotenv import load_dotenv
 
 # Key for encryption and decryption
@@ -28,6 +29,18 @@ fernet = Fernet(fernet_key)
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 # REDIRECT_URI = 'https://task-management-software-1aqw.onrender.com/authorize-redirect'
 REDIRECT_URI = 'http://localhost:5000/authorize-redirect'
+=======
+
+# Key for encryption and decryption
+fernet_key = Fernet.generate_key()
+# Instance the Fernet class with the key
+print("Key generated for encryption:", fernet_key)
+fernet = Fernet(fernet_key)
+
+# If modifying these SCOPES, delete the file token.json
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+REDIRECT_URI = 'https://task-management-software-1aqw.onrender.com/authorize-redirect'
+>>>>>>> 2716ed67d3972448e548cf746db4c62b9e6fa87f
 
 def is_user_google_authed(user):
     if not user.google_token_json:
@@ -75,6 +88,7 @@ def fetch_and_store_token(code, state, user):
 
 def authenticate_google_calendar(curr_user):
     creds = None
+<<<<<<< HEAD
 
     if is_user_google_authed(curr_user):
         encToken = curr_user.google_token_json
@@ -99,10 +113,32 @@ def authenticate_google_calendar(curr_user):
         token = creds.to_json()
         encToken = fernet.encrypt(token.encode())
         curr_user.google_token_json = encToken
+=======
+    if current_user.google_token_json:
+        # Decode the encrypted token
+        encToken = current_user.google_token_json
+        token = fernet.decrypt(encToken.encode()).decode()
+        # Load the token into credentials
+        creds = Credentials.from_authorized_user_info(json.loads(token), SCOPES)
+        # creds = Credentials.from_authorized_user_info(json.loads(current_user.google_token_json), SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save encoded token back to user
+        token = creds.to_json()
+        encToken = fernet.encrypt(token.encode())
+        current_user.google_token_json = encToken
+        # Save the encrypted token to the database
+        # db_sessions.query(User).filter_by(id=current_user.id).update({"google_token_json": encToken})
+        # current_user.google_token_json = creds.to_json()
+>>>>>>> 2716ed67d3972448e548cf746db4c62b9e6fa87f
         db_sessions.commit()
-
     return build('calendar', 'v3', credentials=creds)
 
+<<<<<<< HEAD
 # def authenticate_google_calendar(curr_user):
 #     creds = None
 #     if curr_user.google_token_json:
@@ -130,6 +166,8 @@ def authenticate_google_calendar(curr_user):
 #         db_sessions.commit()
 #     return build('calendar', 'v3', credentials=creds)
 
+=======
+>>>>>>> 2716ed67d3972448e548cf746db4c62b9e6fa87f
 
 def add_task_to_calendar(task, task_title, task_description, task_due_date):
     """Add a task to Google Calendar."""

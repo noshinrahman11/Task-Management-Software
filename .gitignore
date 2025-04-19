@@ -3,7 +3,10 @@ __pycache__/
 # Ignore Google API credentials
 credentials.json
 credentials-desktop.json
+<<<<<<< HEAD
 credentials-web.json
+=======
+>>>>>>> 2716ed67d3972448e548cf746db4c62b9e6fa87f
 token.json
 database.db
 fernet.env
